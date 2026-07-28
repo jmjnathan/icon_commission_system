@@ -1,0 +1,9 @@
+# Go
+backend/tmp/
+backend/*.env
+backend/vendor/
+
+# Node/Vue
+frontend/node_modules/
+frontend/dist/
+frontend/.env
