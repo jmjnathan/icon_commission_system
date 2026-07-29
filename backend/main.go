@@ -10,6 +10,7 @@ import (
 	masterHandler "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/master"
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/router/auth"
 	transaction "github.com/nathanchristiawan02/icon-commission-system-backend/internal/router/client"
+	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/router/commission"
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/router/master"
 
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/middleware"
@@ -21,6 +22,10 @@ import (
 	adminUsecase "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/admin"
 	clientUsecase "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/client"
 	masterUsecase "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/master"
+
+	commissionHandlerPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/commission"
+	commissionRepoPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/commission"
+	commissionUsecasePkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/commission"
 )
 
 func main() {
@@ -61,6 +66,11 @@ func main() {
 	clientUC := clientUsecase.NewClientUsecase(clientRepository)
 	clientH := clientHandler.NewClientHandler(clientUC)
 
+	// Commission
+	commissionRepository := commissionRepoPkg.NewCommissionRepository(config.DB)
+	commissionUC := commissionUsecasePkg.NewCommissionUsecase(commissionRepository)
+	commissionH := commissionHandlerPkg.NewCommissionHandler(commissionUC)
+
 	r := gin.Default()
 
 	auth.RegisterAuthRoutes(r, authH)
@@ -74,6 +84,7 @@ func main() {
 		master.RegisterMasterSaintsRoutes(protected, masterSaintsH)
 		master.RegisterMasterStyleRoutes(protected, masterStyleH)
 		transaction.RegisterClientRoutes(protected, clientH)
+		commission.RegisterCommissionRoutes(protected, commissionH)
 	}
 
 	r.Run(":8080")

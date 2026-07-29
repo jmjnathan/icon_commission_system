@@ -7,6 +7,7 @@ import (
 
 	admin "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/admin"
 	client "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/client"
+	commissionEntity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/commission"
 	master "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/master"
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/migration"
 	"gorm.io/driver/postgres"
@@ -38,6 +39,8 @@ func ConnectDatabase() {
 		&master.MasterSaints{},
 		&master.MasterStyle{},
 		&client.Client{},
+		&commissionEntity.Commission{},
+		&commissionEntity.CommissionItem{},
 	)
 
 	if err != nil {
