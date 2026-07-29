@@ -5,7 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity"
+	admin "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/admin"
+	client "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/client"
+	master "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/master"
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/migration"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -29,14 +31,21 @@ func ConnectDatabase() {
 	}
 
 	log.Println("Database berhasil terkoneksi!")
-	err = db.AutoMigrate(&entity.Admin{}, &entity.MasterSize{})
-
+	err = db.AutoMigrate(
+		&admin.Admin{},
+		&master.MasterSize{},
+		&master.MasterMaterial{},
+		&master.MasterSaints{},
+		&master.MasterStyle{},
+		&client.Client{},
+	)
 
 	if err != nil {
-		 log.Fatal("Gagal migrate: ", err)
+		log.Fatal("Gagal migrate: ", err)
 	}
 	log.Println("Migration berhasil!")
-	
+
 	migration.SeedAdmin(db)
-	
-	DB = db}
+
+	DB = db
+}

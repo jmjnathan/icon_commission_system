@@ -5,19 +5,19 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/dto"
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase"
+	dto "github.com/nathanchristiawan02/icon-commission-system-backend/internal/dto/master"
+	usecase "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/master"
 )
 
-type MasterSizeHandler struct {
-	usecase usecase.MasterSizeUsecase
+type MasterMaterialHandler struct {
+	usecase usecase.MasterMaterialUsecase
 }
 
-func NewMasterSizeHandler(usecase usecase.MasterSizeUsecase) *MasterSizeHandler {
-	return &MasterSizeHandler{usecase: usecase}
+func NewMasterMaterialHandler(usecase usecase.MasterMaterialUsecase) *MasterMaterialHandler {
+	return &MasterMaterialHandler{usecase: usecase}
 }
 
-func (h *MasterSizeHandler) GetAll(c *gin.Context) {
+func (h *MasterMaterialHandler) GetAll(c *gin.Context) {
 	sizes, err := h.usecase.GetAll()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -26,8 +26,8 @@ func (h *MasterSizeHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": sizes})
 }
 
-func (h *MasterSizeHandler) Create(c *gin.Context) {
-	var req dto.MasterSizeRequest
+func (h *MasterMaterialHandler) Create(c *gin.Context) {
+	var req dto.MasterMaterialRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -43,10 +43,10 @@ func (h *MasterSizeHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"data": size})
 }
 
-func (h *MasterSizeHandler) Update(c *gin.Context) {
+func (h *MasterMaterialHandler) Update(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	var req dto.MasterSizeRequest
+	var req dto.MasterMaterialRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -61,7 +61,7 @@ func (h *MasterSizeHandler) Update(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"data": size})
 }
-func (h *MasterSizeHandler) Delete(c *gin.Context) {
+func (h *MasterMaterialHandler) Delete(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	if err := h.usecase.Delete(uint(id)); err != nil {

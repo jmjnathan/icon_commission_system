@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/dto"
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository"
+	repository "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/admin"
 	"github.com/nathanchristiawan02/icon-commission-system-backend/pkg"
 	"golang.org/x/crypto/bcrypt"
 )

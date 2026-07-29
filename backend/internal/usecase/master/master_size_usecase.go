@@ -1,11 +1,12 @@
-package usecase
+package master
 
 import (
 	"time"
 
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/dto"
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity"
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository"
+	dto "github.com/nathanchristiawan02/icon-commission-system-backend/internal/dto/master"
+	adminsistrator "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/admin"
+	entity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/master"
+	repository "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/master"
 )
 
 type MasterSizeUsecase interface {
@@ -31,7 +32,7 @@ func (u *masterSizeUsecase) Create(req dto.MasterSizeRequest, username string) (
 	size := &entity.MasterSize{
 		Name: req.Name,
 		Size: req.Size,
-		BaseModel: entity.BaseModel{
+		BaseModel: adminsistrator.BaseModel{
 			Status:          "active",
 			CreatedUsername: username,
 			UpdatedUsername: username,

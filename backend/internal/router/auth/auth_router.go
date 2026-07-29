@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler"
+	handler "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/admin"
 )
 
 func RegisterAuthRoutes(router *gin.Engine, h *handler.AuthHandler) {

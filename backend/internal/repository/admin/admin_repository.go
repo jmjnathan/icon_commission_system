@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity"
+	entity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/admin"
 	"gorm.io/gorm"
 )
 

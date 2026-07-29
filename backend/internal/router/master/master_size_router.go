@@ -2,7 +2,7 @@ package master
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler"
+	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/master"
 )
 
 func RegisterMasterSizeRoutes(rg *gin.RouterGroup, h *handler.MasterSizeHandler) {

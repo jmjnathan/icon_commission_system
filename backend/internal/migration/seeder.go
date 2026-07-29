@@ -3,14 +3,14 @@ package migration
 import (
 	"log"
 
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity"
+	admin "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/admin"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 func SeedAdmin(db *gorm.DB) {
 	var count int64
-	db.Model(&entity.Admin{}).Count(&count)
+	db.Model(&admin.Admin{}).Count(&count)
 
 	if count > 0 {
 		log.Println("Admin sudah ada, skip seeding")
@@ -22,12 +22,12 @@ func SeedAdmin(db *gorm.DB) {
 		log.Fatal("Gagal hash password seeder: ", err)
 	}
 
-	admin := entity.Admin{
+	adminData := admin.Admin{
 		Username: "admin",
 		Password: string(hashedPassword),
 	}
 
-	if err := db.Create(&admin).Error; err != nil {
+	if err := db.Create(&adminData).Error; err != nil {
 		log.Fatal("Gagal seed admin: ", err)
 	}
 

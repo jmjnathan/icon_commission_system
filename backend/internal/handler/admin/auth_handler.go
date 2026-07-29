@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/dto"
-	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase"
+	usecase "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/admin"
 )
 
 type AuthHandler struct {
