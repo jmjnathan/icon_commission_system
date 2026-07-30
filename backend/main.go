@@ -27,6 +27,7 @@ import (
 	masterUsecase "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/master"
 
 	commissionHandlerPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/commission"
+	uploadHandler "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/upload"
 	commissionRepoPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/commission"
 	commissionUsecasePkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/commission"
 )
@@ -87,6 +88,8 @@ func main() {
 
 	auth.RegisterAuthRoutes(r, authH)
 
+	r.Static("/uploads", "./uploads")
+
 	protected := r.Group("/")
 	protected.Use(middleware.JWTAuthMiddleware())
 	{
@@ -97,6 +100,7 @@ func main() {
 		master.RegisterMasterStyleRoutes(protected, masterStyleH)
 		transaction.RegisterClientRoutes(protected, clientH)
 		commission.RegisterCommissionRoutes(protected, commissionH)
+		protected.POST("/upload", uploadHandler.UploadFile)
 	}
 
 	r.Run(":8080")

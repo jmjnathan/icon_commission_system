@@ -56,6 +56,12 @@ func (u *commissionUsecase) Create(req dto.CommissionRequest, username string) (
 
 	items, total := buildItems(req.Items)
 
+	var photos []entity.CommissionPhoto
+	for _, url := range req.PhotoUrls {
+		photos = append(photos, entity.CommissionPhoto{FileURL: url})
+	}
+
+
 	newCommission := &entity.Commission{
 		ClientID:   req.ClientID,
 		OrderDate:  time.Now(),
@@ -64,6 +70,7 @@ func (u *commissionUsecase) Create(req dto.CommissionRequest, username string) (
 		Status:     "pending",
 		TotalPrice: total,
 		Items:      items,
+		Photos: photos,
 		BaseModel: shared.BaseModel{
 			Status:          "Active",
 			CreatedUsername: username,

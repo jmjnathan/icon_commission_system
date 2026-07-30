@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed } from "vue";
+import { onMounted, computed, ref } from "vue";
 import AppLayout from "../../components/layout/sidebar-app-layout.vue";
 import { useCommission } from "../../composables/commission/useCommission.ts";
 import NotificationComponent from "../../components/notification/notification-component.vue";
@@ -8,13 +8,15 @@ import {
   Eye,
   Zap,
   Clock,
-  Loader2,
   CheckCircle2,
   PackageCheck,
   PenTool,
 } from "lucide-vue-next";
+import { useToast } from "../../composables/etc/useToast.ts";
+import { useConfirm } from "../../composables/etc/useConfirm.ts";
+import CommissionDetailModal from "./modals/commission-detail-modal.vue";
 
-const { commissions, isLoading, fetchAll } = useCommission();
+const { commissions, isLoading, fetchAll, updateStatus } = useCommission();
 const username = localStorage.getItem("username") || "Admin";
 
 onMounted(() => {
@@ -59,10 +61,52 @@ const stats = computed(() => [
     icon: PackageCheck,
   },
 ]);
+const toast = useToast();
+const { confirm } = useConfirm();
 
 const ongoingCommissions = computed(() =>
   commissions.value.filter((c) => c.status !== "delivered")
 );
+
+const statusFlow = ["pending", "in_progress", "completed", "delivered"];
+const statusLabel: Record<string, string> = {
+  pending: "Pending",
+  in_progress: "In Progress",
+  completed: "Completed",
+  delivered: "Delivered",
+};
+
+function nextStatus(current: string) {
+  const idx = statusFlow.indexOf(current);
+  if (idx === -1 || idx === statusFlow.length - 1) return null;
+  return statusFlow[idx + 1];
+}
+
+async function handleAdvanceStatus(item: any) {
+  console.log("handleAdvanceStatus dipanggil", item);
+  const next = nextStatus(item.status);
+  console.log("next status:", next);
+  if (!next) return;
+
+  console.log("sebelum confirm() dipanggil");
+  const confirmed = await confirm({
+    title: "Ubah Status Komisi",
+    message: `Ubah status komisi #${item.id} (${item.client?.name}) dari "${
+      statusLabel[item.status]
+    }" menjadi "${statusLabel[next]}"?`,
+    confirmLabel: "Ya, Ubah",
+  });
+  console.log("setelah confirm(), hasilnya:", confirmed);
+
+  if (!confirmed) return;
+
+  try {
+    await updateStatus(item.id, next);
+    toast.success(`Status berhasil diubah menjadi "${statusLabel[next]}"`);
+  } catch (err: any) {
+    toast.error(err.response?.data?.error || "Gagal mengubah status");
+  }
+}
 
 function progressPercent(status: string) {
   const map: Record<string, number> = {
@@ -152,6 +196,20 @@ const columns: Column[] = [
   { key: "deadline", label: "Deadline" },
   { key: "progress", label: "Progress", align: "left" },
 ];
+
+const showDetailModal = ref(false);
+const selectedCommission = ref<any>(null);
+
+function openDetailModal(item: any) {
+  console.log("Data commission yang dibuka:", item);
+  selectedCommission.value = item;
+  showDetailModal.value = true;
+}
+
+function closeDetailModal() {
+  showDetailModal.value = false;
+  selectedCommission.value = null;
+}
 </script>
 
 <template>
@@ -215,18 +273,18 @@ const columns: Column[] = [
       class="mb-8">
       <template #aksi="{ item }">
         <div class="flex gap-2">
-          <RouterLink
-            :to="`/commissions/${item.id}`"
+          <button
+            @click="openDetailModal(item)"
             class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#C9A24B]/15 text-[#8A6D1F] hover:bg-[#C9A24B]/25 transition"
             title="Lihat detail">
             <Eye :size="16" />
-          </RouterLink>
-          <RouterLink
-            :to="`/commissions/${item.id}/edit`"
+          </button>
+          <button
+            @click="handleAdvanceStatus(item)"
             class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#3B6FA8]/15 text-[#3B6FA8] hover:bg-[#3B6FA8]/25 transition"
-            title="Ubah status">
+            :title="`Ubah ke ${statusLabel[nextStatus(item.status) ?? '']}`">
             <Zap :size="16" />
-          </RouterLink>
+          </button>
         </div>
       </template>
       <template #client="{ item }">
@@ -264,4 +322,8 @@ const columns: Column[] = [
       </template></DataTablesComponent
     >
   </AppLayout>
+  <CommissionDetailModal
+    :visible="showDetailModal"
+    :commission="selectedCommission"
+    @hide="closeDetailModal" />
 </template>

@@ -17,5 +17,6 @@ type Commission struct {
 	Status     string           `gorm:"default:pending" json:"status"`
 	TotalPrice float64          `json:"total_price"`
 	Items      []CommissionItem `json:"items" gorm:"foreignKey:CommissionID"`
+	Photos []CommissionPhoto `json:"photos" gorm:"foreignKey:CommissionID"`
 	shared.BaseModel
 }

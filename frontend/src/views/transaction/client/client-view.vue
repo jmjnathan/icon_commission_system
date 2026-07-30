@@ -1,26 +1,25 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
 import SidebarAppLayout from "../../../components/layout/sidebar-app-layout.vue";
-import DataTablesComponent from "../../../components/tables/data-tables-component.vue";
-import PaginationComponent from "../../../components/pagination/pagination-component.vue";
+import { ref, computed, onMounted } from "vue";
 import {
-  useMasterSize,
-  type MasterSize,
-} from "../../../composables/master/m_size.ts";
-import ChildModalWrapper from "../../../components/modal/child-modal-wrapper.vue";
-import OverlayMenu from "../../../components/button/overlay-menu.vue";
-import { Plus, Pencil, Trash2 } from "lucide-vue-next";
+  useClientApi,
+  type ClientApi,
+} from "../../../composables/commission/client_api.ts";
 import { useToast } from "../../../composables/etc/useToast.ts";
 import { useConfirm } from "../../../composables/etc/useConfirm.ts";
+import { Pencil, Trash2, Plus } from "lucide-vue-next";
+import ChildModalWrapper from "../../../components/modal/child-modal-wrapper.vue";
+import DataTablesComponent from "../../../components/tables/data-tables-component.vue";
+import PaginationComponent from "../../../components/pagination/pagination-component.vue";
 import InputTextComponent from "../../../components/input-text/input-text-component.vue";
+import OverlayMenu from "../../../components/button/overlay-menu.vue";
 
 interface Column {
   key: string;
   label: string;
   align?: "left" | "center" | "right";
 }
-
-const { items, isLoading, fetchAll, create, update, remove } = useMasterSize();
+const { items, isLoading, fetchAll, create, update, remove } = useClientApi();
 
 onMounted(fetchAll);
 const toast = useToast();
@@ -32,16 +31,10 @@ const perPage = ref(50);
 
 const filteredItems = computed(() => {
   return items.value.filter((item) => {
-    const matchSearch =
-      item.name.toLowerCase().includes(search.value.toLowerCase()) ||
-      item.size.toLowerCase().includes(search.value.toLowerCase());
-    const matchStatus =
-      statusFilter.value === "all" ||
-      (statusFilter.value === "active" &&
-        item.status.toLowerCase() === "active") ||
-      (statusFilter.value === "inactive" &&
-        item.status.toLowerCase() !== "active");
-    return matchSearch && matchStatus;
+    const matchSearch = item.name
+      .toLowerCase()
+      .includes(search.value.toLowerCase());
+    return matchSearch;
   });
 });
 
@@ -52,36 +45,52 @@ const paginatedItems = computed(() => {
 
 const columns: Column[] = [
   { key: "aksi", label: "Aksi", align: "center" },
-  { key: "name", label: "Kode" },
-  { key: "size", label: "Ukuran" },
-  { key: "status", label: "Status" },
+  { key: "name", label: "Nama" },
+  { key: "email", label: "Email" },
+  { key: "phone", label: "Telepon" },
+  { key: "address", label: "Alamat" },
+  { key: "remark", label: "Catatan" },
 ];
-
-function statusBadge(status: string) {
-  return status.toLowerCase() === "active"
-    ? "bg-[#4C8C5B]/15 text-[#4C8C5B]"
-    : "bg-[#B23A32]/15 text-[#B23A32]";
-}
 
 // ===== State form modal =====
 const showModal = ref(false);
 const editingId = ref<number | null>(null); // null = mode Create, ada isi = mode Edit
+
 const name = ref("");
-const size = ref("");
-const status = ref("Active");
+const nickname = ref("");
+const phone = ref("");
+const email = ref("");
+const instagram_handle = ref("");
+const address = ref("");
+const city = ref("");
+const province = ref("");
+const postal_code = ref("");
+const denomination = ref("");
+const patron_saint_preference = ref("");
+const preferred_payment_method = ref("");
+
 const isSubmitting = ref(false);
 const formError = ref("");
 
 const isEditMode = computed(() => editingId.value !== null);
 const modalTitle = computed(() =>
-  isEditMode.value ? "Edit Ukuran" : "Tambah Ukuran Baru"
+  isEditMode.value ? "Edit Klien" : "Tambah Klien Baru"
 );
 
 function resetForm() {
   editingId.value = null;
   name.value = "";
-  size.value = "";
-  status.value = "Active";
+  nickname.value = "";
+  phone.value = "";
+  email.value = "";
+  instagram_handle.value = "";
+  address.value = "";
+  city.value = "";
+  province.value = "";
+  postal_code.value = "";
+  denomination.value = "";
+  patron_saint_preference.value = "";
+  preferred_payment_method.value = "";
   formError.value = "";
 }
 
@@ -90,11 +99,20 @@ function openCreateModal() {
   showModal.value = true;
 }
 
-function openEditModal(item: MasterSize) {
+function openEditModal(item: ClientApi) {
   editingId.value = item.id;
   name.value = item.name;
-  size.value = item.size;
-  status.value = item.status;
+  nickname.value = item.nickname;
+  phone.value = item.phone;
+  email.value = item.email;
+  instagram_handle.value = item.instagram_handle;
+  address.value = item.address;
+  city.value = item.city;
+  province.value = item.province;
+  postal_code.value = item.postal_code;
+  denomination.value = item.denomination;
+  patron_saint_preference.value = item.patron_saint_preference;
+  preferred_payment_method.value = item.preferred_payment_method;
   formError.value = "";
   showModal.value = true;
 }
@@ -108,16 +126,29 @@ async function handleAdd() {
   isSubmitting.value = true;
   formError.value = "";
   try {
+    const payload = {
+      name: name.value,
+      nickname: nickname.value,
+      phone: phone.value,
+      email: email.value,
+      instagram_handle: instagram_handle.value,
+      address: address.value,
+      city: city.value,
+      province: province.value,
+      postal_code: postal_code.value,
+      denomination: denomination.value,
+      patron_saint_preference: patron_saint_preference.value,
+      preferred_payment_method: preferred_payment_method.value,
+    };
+
     if (isEditMode.value && editingId.value !== null) {
       await update(editingId.value, {
-        name: name.value,
-        size: size.value,
-        status: status.value,
+        ...payload,
       });
-      toast.success("Ukuran berhasil diperbarui");
+      toast.success("Client berhasil diperbarui");
     } else {
-      await create({ name: name.value, size: size.value });
-      toast.success("Ukuran baru berhasil ditambahkan");
+      await create(payload);
+      toast.success("Client baru berhasil ditambahkan");
     }
     closeModal();
   } catch (err: any) {
@@ -126,10 +157,10 @@ async function handleAdd() {
     isSubmitting.value = false;
   }
 }
-async function handleDelete(item: MasterSize) {
+async function handleDelete(item: ClientApi) {
   const confirmed = await confirm({
-    title: "Hapus Ukuran",
-    message: `Yakin ingin menghapus ukuran "${item.name}"? Tindakan ini tidak dapat dibatalkan.`,
+    title: "Hapus Klien",
+    message: `Yakin ingin menghapus klien "${item.name}"? Tindakan ini tidak dapat dibatalkan.`,
     confirmLabel: "Ya, Hapus",
     danger: true,
   });
@@ -138,13 +169,13 @@ async function handleDelete(item: MasterSize) {
 
   try {
     await remove(item.id);
-    toast.success("Ukuran berhasil dihapus");
+    toast.success("Klien berhasil dihapus");
   } catch (err: any) {
     toast.error(err.response?.data?.error || "Gagal menghapus data");
   }
 }
 
-function buildMenuItems(item: MasterSize) {
+function buildMenuItems(item: ClientApi) {
   return [
     {
       label: "Edit",
@@ -167,7 +198,7 @@ function buildMenuItems(item: MasterSize) {
       <div class="flex items-center justify-between mb-6">
         <h1
           class="text-xl font-semibold text-[#3A2E1F] flex items-center gap-2">
-          Ukuran
+          Klien
         </h1>
         <button
           @click="openCreateModal"
@@ -189,40 +220,7 @@ function buildMenuItems(item: MasterSize) {
             class="w-full px-4 py-2.5 bg-white border border-[#D9CBB0] rounded-lg text-sm text-[#3A2E1F] placeholder-[#B0A588] focus:outline-none focus:ring-2 focus:ring-[#C9A24B]/40 focus:border-[#C9A24B] transition" />
         </div>
 
-        <div class="col-span-6">
-          <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
-            Status
-          </label>
-          <div class="flex items-center gap-4 h-10.5">
-            <label
-              class="flex items-center gap-2 text-sm text-[#3A2E1F] cursor-pointer">
-              <input
-                type="radio"
-                value="all"
-                v-model="statusFilter"
-                class="accent-[#C9A24B]" />
-              Semua
-            </label>
-            <label
-              class="flex items-center gap-2 text-sm text-[#3A2E1F] cursor-pointer">
-              <input
-                type="radio"
-                value="active"
-                v-model="statusFilter"
-                class="accent-[#C9A24B]" />
-              Aktif
-            </label>
-            <label
-              class="flex items-center gap-2 text-sm text-[#3A2E1F] cursor-pointer">
-              <input
-                type="radio"
-                value="inactive"
-                v-model="statusFilter"
-                class="accent-[#C9A24B]" />
-              Non-Aktif
-            </label>
-          </div>
-        </div>
+        <div class="col-span-6"></div>
       </div>
       <div class="flex justify-end mb-2">
         <PaginationComponent
@@ -240,13 +238,6 @@ function buildMenuItems(item: MasterSize) {
         <template #aksi="{ item }">
           <OverlayMenu :items="buildMenuItems(item)" />
         </template>
-        <template #status="{ item }">
-          <span
-            class="px-3 rounded-full text-xs font-semibold"
-            :class="statusBadge(item.status)">
-            {{ item.status.toUpperCase() }}
-          </span>
-        </template>
       </DataTablesComponent>
 
       <PaginationComponent
@@ -258,34 +249,72 @@ function buildMenuItems(item: MasterSize) {
     <ChildModalWrapper
       :visible="showModal"
       :header-title="modalTitle"
-      width-class="w-full max-w-md"
+      width-class="w-full max-w-6xl"
       @hide="closeModal">
       <form @submit.prevent="handleAdd" class="space-y-4">
-        <div>
+        <div class="grid grid-cols-3 gap-4">
           <InputTextComponent
             v-model="name"
-            label="Kode"
+            label="Nama Lengkap"
             placeholder="Masukkan nama"
             required />
-        </div>
-        <div>
-          <InputTextComponent
-            v-model="size"
-            label="Ukuran"
-            placeholder="Masukkan ukuran"
-            required />
-        </div>
 
-        <div v-if="isEditMode">
-          <label class="block text-xs font-medium text-[#6B5D45] mb-1.5"
-            >Status</label
-          >
-          <select
-            v-model="status"
-            class="w-full px-4 py-2.5 border border-[#D9CBB0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A24B]/40">
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
+          <InputTextComponent
+            v-model="nickname"
+            label="Nickname"
+            placeholder="Masukkan nickname" />
+
+          <InputTextComponent
+            v-model="phone"
+            label="Telepon"
+            placeholder="Masukkan nomor telepon" />
+
+          <InputTextComponent
+            v-model="email"
+            label="Email"
+            placeholder="Masukkan email" />
+
+          <InputTextComponent
+            v-model="instagram_handle"
+            label="Instagram"
+            placeholder="Masukkan handle instagram" />
+
+          <InputTextComponent
+            v-model="address"
+            label="Alamat"
+            placeholder="Masukkan alamat" />
+
+          <InputTextComponent
+            v-model="city"
+            label="Kota"
+            placeholder="Masukkan kota" />
+
+          <InputTextComponent
+            v-model="province"
+            label="Provinsi"
+            placeholder="Masukkan provinsi" />
+
+          <InputTextComponent
+            v-model="postal_code"
+            label="Kode Pos"
+            placeholder="Masukkan kode pos" />
+
+          <InputTextComponent
+            v-model="denomination"
+            label="Denominasi"
+            placeholder="Masukkan denominasi" />
+
+          <InputTextComponent
+            v-model="patron_saint_preference"
+            label="Santo Pelindung"
+            placeholder="Masukkan santo pelindung pilihan" />
+
+          <InputTextComponent
+            v-model="preferred_payment_method"
+            label="Metode Pembayaran"
+            placeholder="Masukkan metode pembayaran pilihan" />
+
+          <div v-if="isEditMode"></div>
         </div>
 
         <p

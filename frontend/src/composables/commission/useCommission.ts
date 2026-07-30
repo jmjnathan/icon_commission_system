@@ -11,6 +11,11 @@ export interface CommissionItem {
   notes: string;
 }
 
+export interface CommissionPhoto {
+  id: number;
+  file_url: string;
+}
+
 export interface Commission {
   id: number;
   client: { name: string };
@@ -20,6 +25,7 @@ export interface Commission {
   status: string;
   total_price: number;
   items: CommissionItem[];
+  photos?: CommissionPhoto[];
 }
 
 const commissions = ref<Commission[]>([]);
@@ -41,5 +47,21 @@ export function useCommission() {
     }
   }
 
-  return { commissions, isLoading, errorMessage, fetchAll };
+  async function updateStatus(id: number, status: string) {
+    await api.patch(`/commissions/edit/${id}/status`, { status });
+    await fetchAll();
+  }
+
+  async function create(payload: any) {
+    await api.post("/commissions/create", payload);
+  }
+
+  return {
+    commissions,
+    isLoading,
+    errorMessage,
+    fetchAll,
+    updateStatus,
+    create,
+  };
 }

@@ -9,6 +9,8 @@ import {
   Package,
   LogOut,
   ChevronDown,
+  Notebook,
+  BriefcaseBusiness,
 } from "lucide-vue-next";
 
 const route = useRoute();
@@ -16,17 +18,31 @@ const { logout } = useAuth();
 
 const masterOpen = ref(true);
 
-const navItems = [
-  { name: "Dashboard", path: "/", icon: LayoutDashboard },
-  { name: "Komisi", path: "/commissions", icon: Briefcase },
-  { name: "Client", path: "/clients", icon: User },
+const navItems = [{ name: "Dashboard", path: "/", icon: LayoutDashboard }];
+
+const transactionItems = [
+  { name: "Pemesanan", path: "/transaction/commissions", icon: Briefcase },
+  {
+    name: "Riwayat",
+    path: "/transaction/history-transaction",
+    icon: Notebook,
+  },
+  { name: "Client", path: "/transaction/clients", icon: User },
+];
+
+const cashflowItem = [
+  {
+    name: "Laporan Keuangan",
+    path: "/cashflow/report",
+    icon: BriefcaseBusiness,
+  },
 ];
 
 const masterItems = [
   { name: "Ukuran", path: "/master/size" },
-  { name: "Material", path: "/master/materials" },
-  { name: "Style", path: "/master/styles" },
-  { name: "Santo / Santa", path: "/master/saints" },
+  { name: "Material", path: "/master/material" },
+  { name: "Gaya Lukisan", path: "/master/styles" },
+  { name: "Objek Lukisan", path: "/master/saints" },
 ];
 </script>
 
@@ -47,6 +63,41 @@ const masterItems = [
         </p>
         <RouterLink
           v-for="item in navItems"
+          :key="item.path"
+          :to="item.path"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition"
+          :class="
+            route.path === item.path
+              ? 'bg-[#1E2E44] text-[#C9A24B] font-medium'
+              : 'text-[#B0A588] hover:bg-white/5 hover:text-[#D9CBB0]'
+          ">
+          <component :is="item.icon" :size="18" />
+          {{ item.name }}
+        </RouterLink>
+
+        <p
+          class="px-3 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
+          Transaksi
+        </p>
+        <RouterLink
+          v-for="item in transactionItems"
+          :key="item.path"
+          :to="item.path"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition"
+          :class="
+            route.path === item.path
+              ? 'bg-[#1E2E44] text-[#C9A24B] font-medium'
+              : 'text-[#B0A588] hover:bg-white/5 hover:text-[#D9CBB0]'
+          ">
+          <component :is="item.icon" :size="18" />
+          {{ item.name }}
+        </RouterLink>
+        <p
+          class="px-3 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
+          Arus Kas
+        </p>
+        <RouterLink
+          v-for="item in cashflowItem"
           :key="item.path"
           :to="item.path"
           class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition"

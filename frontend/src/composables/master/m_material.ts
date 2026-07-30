@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import api from "../../services/api";
 
-export interface MasterSaints {
+export interface MasterMaterial {
   id: number;
   name: string;
   remark: string;
@@ -10,16 +10,16 @@ export interface MasterSaints {
   created_username: string;
 }
 
-const items = ref<MasterSaints[]>([]);
+const items = ref<MasterMaterial[]>([]);
 const isLoading = ref(false);
 const errorMessage = ref("");
 
-export function useMasterSaints() {
+export function useMasterMaterial() {
   async function fetchAll() {
     isLoading.value = true;
     errorMessage.value = "";
     try {
-      const response = await api.get("/master/get-saints");
+      const response = await api.get("/master/get-material");
       items.value = response.data.data || [];
     } catch (err: any) {
       errorMessage.value = err.response?.data?.error || "Gagal memuat data";
@@ -29,7 +29,7 @@ export function useMasterSaints() {
   }
 
   async function create(payload: { name: string; remark: string }) {
-    await api.post("/master/create-saints", payload);
+    await api.post("/master/create-material", payload);
     await fetchAll();
   }
 
@@ -37,12 +37,12 @@ export function useMasterSaints() {
     id: number,
     payload: { name: string; remark: string; status: string }
   ) {
-    await api.put(`/master/saints/edit/${id}`, payload);
+    await api.put(`/master/material/edit/${id}`, payload);
     await fetchAll();
   }
 
   async function remove(id: number) {
-    await api.delete(`/master/saints/delete/${id}`);
+    await api.delete(`/master/material/delete/${id}`);
     await fetchAll();
   }
 

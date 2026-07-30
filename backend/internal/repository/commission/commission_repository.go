@@ -28,7 +28,8 @@ func (r *commissionRepository) preloadAll(db *gorm.DB) *gorm.DB {
 		Preload("Items.Saint").
 		Preload("Items.Size").
 		Preload("Items.Material").
-		Preload("Items.Style")
+		Preload("Items.Style").
+		Preload("Photos")
 }
 
 func (r *commissionRepository) FindAll() ([]entity.Commission, error) {

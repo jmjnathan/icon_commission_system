@@ -41,6 +41,7 @@ func ConnectDatabase() {
 		&client.Client{},
 		&commissionEntity.Commission{},
 		&commissionEntity.CommissionItem{},
+		&commissionEntity.CommissionPhoto{},
 	)
 
 	if err != nil {

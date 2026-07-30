@@ -1,26 +1,23 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
 import SidebarAppLayout from "../../../components/layout/sidebar-app-layout.vue";
-import DataTablesComponent from "../../../components/tables/data-tables-component.vue";
-import PaginationComponent from "../../../components/pagination/pagination-component.vue";
-import {
-  useMasterSize,
-  type MasterSize,
-} from "../../../composables/master/m_size.ts";
-import ChildModalWrapper from "../../../components/modal/child-modal-wrapper.vue";
-import OverlayMenu from "../../../components/button/overlay-menu.vue";
-import { Plus, Pencil, Trash2 } from "lucide-vue-next";
+import { ref, computed, onMounted } from "vue";
+import { useMasterSaints, type MasterSaints } from "../../../composables/master/m_saints.ts";
 import { useToast } from "../../../composables/etc/useToast.ts";
 import { useConfirm } from "../../../composables/etc/useConfirm.ts";
+import { Pencil, Trash2 } from "lucide-vue-next";
+import ChildModalWrapper from "../../../components/modal/child-modal-wrapper.vue";
+import DataTablesComponent from "../../../components/tables/data-tables-component.vue";
+import PaginationComponent from "../../../components/pagination/pagination-component.vue";
 import InputTextComponent from "../../../components/input-text/input-text-component.vue";
+import OverlayMenu from "../../../components/button/overlay-menu.vue";
 
 interface Column {
   key: string;
   label: string;
   align?: "left" | "center" | "right";
 }
-
-const { items, isLoading, fetchAll, create, update, remove } = useMasterSize();
+const { items, isLoading, fetchAll, create, update, remove } =
+  useMasterSaints();
 
 onMounted(fetchAll);
 const toast = useToast();
@@ -34,7 +31,7 @@ const filteredItems = computed(() => {
   return items.value.filter((item) => {
     const matchSearch =
       item.name.toLowerCase().includes(search.value.toLowerCase()) ||
-      item.size.toLowerCase().includes(search.value.toLowerCase());
+      item.remark.toLowerCase().includes(search.value.toLowerCase());
     const matchStatus =
       statusFilter.value === "all" ||
       (statusFilter.value === "active" &&
@@ -53,7 +50,7 @@ const paginatedItems = computed(() => {
 const columns: Column[] = [
   { key: "aksi", label: "Aksi", align: "center" },
   { key: "name", label: "Kode" },
-  { key: "size", label: "Ukuran" },
+  { key: "remark", label: "Catatan" },
   { key: "status", label: "Status" },
 ];
 
@@ -67,7 +64,7 @@ function statusBadge(status: string) {
 const showModal = ref(false);
 const editingId = ref<number | null>(null); // null = mode Create, ada isi = mode Edit
 const name = ref("");
-const size = ref("");
+const remark = ref("");
 const status = ref("Active");
 const isSubmitting = ref(false);
 const formError = ref("");
@@ -80,7 +77,7 @@ const modalTitle = computed(() =>
 function resetForm() {
   editingId.value = null;
   name.value = "";
-  size.value = "";
+  remark.value = "";
   status.value = "Active";
   formError.value = "";
 }
@@ -90,10 +87,10 @@ function openCreateModal() {
   showModal.value = true;
 }
 
-function openEditModal(item: MasterSize) {
+function openEditModal(item: MasterSaints) {
   editingId.value = item.id;
   name.value = item.name;
-  size.value = item.size;
+  remark.value = item.remark;
   status.value = item.status;
   formError.value = "";
   showModal.value = true;
@@ -111,12 +108,12 @@ async function handleAdd() {
     if (isEditMode.value && editingId.value !== null) {
       await update(editingId.value, {
         name: name.value,
-        size: size.value,
+        remark: remark.value,
         status: status.value,
       });
       toast.success("Ukuran berhasil diperbarui");
     } else {
-      await create({ name: name.value, size: size.value });
+      await create({ name: name.value, remark: remark.value });
       toast.success("Ukuran baru berhasil ditambahkan");
     }
     closeModal();
@@ -126,11 +123,11 @@ async function handleAdd() {
     isSubmitting.value = false;
   }
 }
-async function handleDelete(item: MasterSize) {
+async function handleDelete(item: MasterSaints) {
   const confirmed = await confirm({
-    title: "Hapus Ukuran",
-    message: `Yakin ingin menghapus ukuran "${item.name}"? Tindakan ini tidak dapat dibatalkan.`,
-    confirmLabel: "Ya, Hapus",
+    title: "Hapus Objek Lukisan",
+    message: `Yakin ingin menghapus objek lukisan "${item.name}"? Tindakan ini tidak dapat dibatalkan.`,
+    confirmLabel: "Ya",
     danger: true,
   });
 
@@ -138,13 +135,13 @@ async function handleDelete(item: MasterSize) {
 
   try {
     await remove(item.id);
-    toast.success("Ukuran berhasil dihapus");
+    toast.success("Objek Lukisan berhasil dihapus");
   } catch (err: any) {
     toast.error(err.response?.data?.error || "Gagal menghapus data");
   }
 }
 
-function buildMenuItems(item: MasterSize) {
+function buildMenuItems(item: MasterSaints) {
   return [
     {
       label: "Edit",
@@ -167,7 +164,7 @@ function buildMenuItems(item: MasterSize) {
       <div class="flex items-center justify-between mb-6">
         <h1
           class="text-xl font-semibold text-[#3A2E1F] flex items-center gap-2">
-          Ukuran
+          Objek Lukisan
         </h1>
         <button
           @click="openCreateModal"
@@ -270,9 +267,9 @@ function buildMenuItems(item: MasterSize) {
         </div>
         <div>
           <InputTextComponent
-            v-model="size"
-            label="Ukuran"
-            placeholder="Masukkan ukuran"
+            v-model="remark"
+            label="Catatan"
+            placeholder="Masukkan catatan"
             required />
         </div>
 

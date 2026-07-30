@@ -10,10 +10,11 @@ type CommissionItemRequest struct {
 }
 
 type CommissionRequest struct {
-	ClientID uint                    `json:"client_id" binding:"required"`
-	Deadline string                  `json:"deadline" binding:"required"`
-	Notes    string                  `json:"notes"`
-	Items    []CommissionItemRequest `json:"items" binding:"required,min=1,dive"`
+	ClientID  uint                    `json:"client_id" binding:"required"`
+	Deadline  string                  `json:"deadline" binding:"required"`
+	Notes     string                  `json:"notes"`
+	Items     []CommissionItemRequest `json:"items" binding:"required,min=1,dive"`
+	PhotoUrls []string                `json:"photo_urls"`
 }
 
 type CommissionStatusRequest struct {

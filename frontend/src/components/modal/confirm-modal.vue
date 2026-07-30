@@ -1,30 +1,24 @@
 <script setup lang="ts">
-import { useConfirm } from '../../composables/etc/useConfirm'
-import { AlertTriangle, HelpCircle } from 'lucide-vue-next'
+import { useConfirm } from "../../composables/etc/useConfirm";
 
-const { isVisible, options, handleConfirm, handleCancel } = useConfirm()
+const { isVisible, options, handleConfirm, handleCancel } = useConfirm();
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="confirm-fade">
-      <div v-if="isVisible" class="fixed inset-0 z-110 flex items-center justify-center">
+      <div
+        v-if="isVisible"
+        class="fixed inset-0 z-110 flex items-center justify-center">
         <div class="absolute inset-0 bg-black/40" @click="handleCancel"></div>
 
-        <div class="relative bg-[#FAF6EC] rounded-xl shadow-xl w-full max-w-sm mx-4 p-6">
+        <div
+          class="relative bg-[#FAF6EC] rounded-xl shadow-xl w-full max-w-sm mx-4 p-6">
           <div class="flex items-start gap-3 mb-4">
-            <div
-              class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-              :class="options.danger ? 'bg-[#B23A32]/15' : 'bg-[#3B6FA8]/15'"
-            >
-              <component
-                :is="options.danger ? AlertTriangle : HelpCircle"
-                :size="20"
-                :class="options.danger ? 'text-[#B23A32]' : 'text-[#3B6FA8]'"
-              />
-            </div>
             <div class="flex-1 pt-1">
-              <h3 class="text-base font-semibold text-[#3A2E1F]">{{ options.title }}</h3>
+              <h3 class="text-base font-semibold text-[#3A2E1F]">
+                {{ options.title }}
+              </h3>
               <p class="text-sm text-[#6B5D45] mt-1">{{ options.message }}</p>
             </div>
           </div>
@@ -32,15 +26,17 @@ const { isVisible, options, handleConfirm, handleCancel } = useConfirm()
           <div class="flex justify-end gap-3">
             <button
               @click="handleCancel"
-              class="px-4 py-2 text-sm font-medium text-[#6B5D45] rounded-lg hover:bg-[#E5D9BF]/50 transition"
-            >
+              class="px-4 py-2 text-sm font-medium text-[#6B5D45] rounded-lg hover:bg-[#E5D9BF]/50 transition">
               {{ options.cancelLabel }}
             </button>
             <button
               @click="handleConfirm"
               class="px-4 py-2 text-sm font-medium text-white rounded-lg transition"
-              :class="options.danger ? 'bg-[#B23A32] hover:bg-[#8F2E27]' : 'bg-[#7A1F2B] hover:bg-[#5F1621]'"
-            >
+              :class="
+                options.danger
+                  ? 'bg-[#B23A32] hover:bg-[#8F2E27]'
+                  : 'bg-[#7A1F2B] hover:bg-[#5F1621]'
+              ">
               {{ options.confirmLabel }}
             </button>
           </div>
