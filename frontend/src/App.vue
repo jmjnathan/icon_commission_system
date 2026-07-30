@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import ToastContainer from "./components/toast/toast-component.vue";
+import ConfirmModal from "./components/modal/confirm-modal.vue";
 </script>
 
 <template>
-  <HelloWorld />
+  <router-view />
+  <ToastContainer />
+  <ConfirmModal />
 </template>
