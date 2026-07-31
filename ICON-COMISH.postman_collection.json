@@ -1,0 +1,1237 @@
+{
+  "info": {
+    "_postman_id": "f37fe765-6ce0-4376-a06a-afdaf7452f2a",
+    "name": "ICON-COMISH",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56953169",
+    "_collection_link": "https://go.postman.co/collection/56953169-f37fe765-6ce0-4376-a06a-afdaf7452f2a?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Master",
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "Auth",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successful POST request\", function () {",
+                      "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/login",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "login"
+                  ]
+                },
+                "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Size",
+          "item": [
+            {
+              "name": "Get Size",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "// Visualization Script",
+                      "",
+                      "// Visualization Script",
+                      "const template = `",
+                      "<style>",
+                      "  body { font-family: sans-serif; padding: 12px; }",
+                      "  h3 { margin: 0 0 12px; font-size: 15px; color: #333; }",
+                      "  table { width: 100%; border-collapse: collapse; font-size: 13px; }",
+                      "  th { background: #f0f0f0; text-align: left; padding: 8px 10px; border-bottom: 2px solid #ddd; color: #555; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }",
+                      "  td { padding: 8px 10px; border-bottom: 1px solid #eee; color: #333; }",
+                      "  tr:hover td { background: #fafafa; }",
+                      "  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; }",
+                      "  .active { background: #d1fae5; color: #065f46; }",
+                      "  .inactive { background: #fee2e2; color: #991b1b; }",
+                      "</style>",
+                      "<h3>Sizes ({{total}} records)</h3>",
+                      "<table>",
+                      "  <tr>",
+                      "    <th>#</th>",
+                      "    <th>Name</th>",
+                      "    <th>Size</th>",
+                      "    <th>Status</th>",
+                      "    <th>Created By</th>",
+                      "    <th>Updated By</th>",
+                      "  </tr>",
+                      "  {{#each rows}}",
+                      "  <tr>",
+                      "    <td>{{id}}</td>",
+                      "    <td>{{name}}</td>",
+                      "    <td>{{size}}</td>",
+                      "    <td><span class=\"badge {{statusClass}}\">{{status}}</span></td>",
+                      "    <td>{{createdBy}}</td>",
+                      "    <td>{{updatedBy}}</td>",
+                      "  </tr>",
+                      "  {{/each}}",
+                      "</table>`;",
+                      "",
+                      "function createPayload() {",
+                      "  const body = pm.response.json();",
+                      "  const items = body.data || [];",
+                      "  return {",
+                      "    total: items.length,",
+                      "    rows: items.map(function(item) {",
+                      "      return {",
+                      "        id: item.id,",
+                      "        name: item.name,",
+                      "        size: item.size,",
+                      "        status: item.status,",
+                      "        statusClass: item.status === 'active' ? 'active' : 'inactive',",
+                      "        createdBy: item.created_username,",
+                      "        updatedBy: item.updated_username",
+                      "      };",
+                      "    })",
+                      "  };",
+                      "}",
+                      "",
+                      "pm.visualizer.set(template, createPayload());",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_secret_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/master/get-sizes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "get-sizes"
+                  ]
+                },
+                "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Size",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_secret_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"6R\",\n  \"size\": \"15x20\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/master/create-sizes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "create-sizes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Size",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{json_web_token_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/master/size/delete/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "size",
+                    "delete",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "3"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Edit Size",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{json_web_token_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Extra Small Sekali\",\n  \"size\": \"6x8\",\n  \"status\": \"active\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/master/sizes/edit/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "sizes",
+                    "edit",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "4"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Material",
+          "item": [
+            {
+              "name": "Get Material",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_secret_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/master/get-material",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "get-material"
+                  ]
+                },
+                "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Material",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_secret_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Kayu Mahoni - tebal 2cm\",\n  \"remark\": \"Kayu mahoni tebal 2cm dengan linen dan gesso\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/master/create-material",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "create-material"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Material",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{json_web_token_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/master/material/delete/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "material",
+                    "delete",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Edit Material",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{json_web_token_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Kayu Mahoni - tebal 2cm\",\n  \"remark\": \"tebal bgt bos\",\n  \"status\": \"inactive\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/master/material/edit/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "material",
+                    "edit",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Saints",
+          "item": [
+            {
+              "name": "Get Saints",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_secret_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/master/get-saints",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "get-saints"
+                  ]
+                },
+                "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Saint",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_secret_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Theotokos Hodegetria\",\n  \"remark\": \"Ikon Kristus Pantokrator\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/master/create-saints",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "create-saints"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Saint",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{json_web_token_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/master/saints/delete/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "saints",
+                    "delete",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Edit Saint",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{json_web_token_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Theotokos Hodegetria\",\n  \"remark\": \"Ikon Bunda Allah penunjuk jalan\",\n  \"status\": \"active\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/master/saints/edit/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "saints",
+                    "edit",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Style",
+          "item": [
+            {
+              "name": "Get Style",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_secret_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/master/get-style",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "get-style"
+                  ]
+                },
+                "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Style",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_secret_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Byzantine Style 2\",\n  \"remark\": \"Gaya Byzantine Abad ke-10 delete \"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/master/create-style",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "create-style"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Style",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{json_web_token_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/master/style/delete/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "style",
+                    "delete",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "3"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Edit Style",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{json_web_token_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n   \"name\": \"Byzantine Style\",\n  \"remark\": \"Gaya Byzantine Abad ke-10 \"\n  \"status\": \"active\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/master/style/edit/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "style",
+                    "edit",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Internal",
+      "item": [
+        {
+          "name": "Client",
+          "item": [
+            {
+              "name": "Get Client",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_secret_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/master/get-clients",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "get-clients"
+                  ]
+                },
+                "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Client",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auth_secret_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Angelica Putri\",\n  \"nickname\": \"Angel\",\n  \"phone\": \"082156789012\",\n  \"email\": \"angelica.putri@email.com\",\n  \"instagram_handle\": \"@angelicaputri\",\n  \"address\": \"Jl. Gajah Mada No. 88\",\n  \"city\": \"Surabaya\",\n  \"province\": \"Jawa Timur\",\n  \"postal_code\": \"60174\",\n  \"denomination\": \"Katolik\",\n  \"patron_saint_preference\": \"St. Maria Goretti\",\n  \"preferred_payment_method\": \"QRIS\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/master/create-clients",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "create-clients"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Client",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{json_web_token_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/master/clients/delete/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "clients",
+                    "delete",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "3"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Edit Client",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{json_web_token_043u}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Maria Wijaya\",\n  \"nickname\": \"Ria\",\n  \"phone\": \"081234567890\",\n  \"alternate_phone\": \"081298765432\",\n  \"email\": \"maria.wijaya@gmail.com\",\n  \"instagram_handle\": \"@mariawijaya_\",\n  \"address\": \"Jl. Pandanaran No. 10, RT 05/RW 02\",\n  \"city\": \"Semarang\",\n  \"province\": \"Jawa Tengah\",\n  \"postal_code\": \"50134\",\n  \"country\": \"Indonesia\",\n  \"denomination\": \"Katolik\",\n  \"patron_saint_preference\": \"St. Bernadette Soubirous\",\n  \"parish_name\": \"Paroki Katedral Santo Yusuf Semarang\",\n  \"preferred_payment_method\": \"Transfer BCA\",\n  \"notes\": \"Klien reguler, biasanya request gaya Hybrid Western-Eastern\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/master/clients/edit/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "master",
+                    "clients",
+                    "edit",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Commission",
+      "item": [
+        {
+          "name": "Get Commisions List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auth_secret_043u}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/commissions/get-list",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "commissions",
+                "get-list"
+              ]
+            },
+            "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Commission",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auth_secret_043u}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_id\": 1,\n  \"deadline\": \"2026-09-15\",\n  \"notes\": \"Sepasang ikon buat kado pernikahan\",\n  \"items\": [\n    {\n      \"saint_id\": 1,\n      \"size_id\": 1,\n      \"material_id\": 1,\n      \"style_id\": 1,\n      \"price\": 750000,\n      \"notes\": \"Untuk mempelai pria, pose tangan memberkati\"\n    },\n    {\n      \"saint_id\": 2,\n      \"size_id\": 1,\n      \"material_id\": 1,\n      \"style_id\": 2,\n      \"price\": 850000,\n      \"notes\": \"Untuk mempelai wanita, gaya Hybrid dengan aureole emas\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/commissions/create",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "commissions",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Commission",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{json_web_token_043u}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/master/style/delete/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "master",
+                "style",
+                "delete",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit Commission",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{json_web_token_043u}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_id\": 1,\n  \"deadline\": \"2026-09-30\",\n  \"notes\": \"Deadline diundur, klien minta tambah detail emas\",\n  \"items\": [\n    {\n      \"saint_id\": 1,\n      \"size_id\": 1,\n      \"material_id\": 1,\n      \"style_id\": 1,\n      \"price\": 800000,\n      \"notes\": \"Harga naik karena tambahan gold leaf detail\"\n    },\n    {\n      \"saint_id\": 2,\n      \"size_id\": 1,\n      \"material_id\": 1,\n      \"style_id\": 2,\n      \"price\": 850000,\n      \"notes\": \"Untuk mempelai wanita, gaya Hybrid dengan aureole emas\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/commissions/edit/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "commissions",
+                "edit",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit Status Commission",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{json_web_token_043u}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n   \"name\": \"Byzantine Style\",\n  \"remark\": \"Gaya Byzantine Abad ke-10 \"\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/commissions/edit/:id/status",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "commissions",
+                "edit",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "auth_secret_043u",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_043u",
+      "secret": true
+    }
+  ]
+}

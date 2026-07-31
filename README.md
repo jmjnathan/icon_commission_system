@@ -1,93 +1,112 @@
-# icon-commission-system
+# Icon Commission System — Sacred Icon Studio
 
+Aplikasi fullstack untuk manajemen komisi lukisan ikon, mencakup data client, master data, tracking pesanan (commission), serta pencatatan arus kas sederhana.
 
+Dibuat sebagai bagian dari Technical Test — Fullstack Developer.
 
-## Getting started
+## Tech Stack
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+**Backend**
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- Go + Gin Framework
+- GORM + PostgreSQL
+- Clean Architecture (entity, dto, repository, usecase, handler, router)
+- JWT Authentication
+- golang-migrate (dokumentasi struktur migrasi database)
 
-## Add your files
+**Frontend**
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+- Vue 3 (Composition API) + TypeScript
+- Tailwind CSS
+- Vue Router
+- Axios (dengan interceptor untuk auth token & error handling)
 
+## Fitur Utama
+
+- **Autentikasi** — Login admin menggunakan JWT
+- **Master Data** — CRUD untuk Ukuran, Material, Style, dan Santo/Santa (mendukung autocomplete di form Commission)
+- **Client Management** — Data lengkap pemesan, termasuk preferensi santo pelindung dan riwayat pesanan
+- **Commission (Order Komisi)** — Mendukung banyak item dalam satu transaksi (pola header-detail), lengkap dengan foto referensi, tracking status (pending → in_progress → completed → delivered)
+- **Riwayat Transaksi** — Daftar komisi yang sudah selesai/terkirim, dengan fitur cetak label pengiriman
+- **Arus Kas Keluar (Cash Out)** — Pencatatan pengeluaran (qty, harga satuan, vendor, metode bayar, bukti struk)
+- **Laporan Keuangan** — Ringkasan kas masuk/keluar dan laba-rugi sederhana per bulan, dapat dicetak
+- **Upload File** — Foto referensi komisi dan bukti struk pengeluaran, disimpan di server (folder `uploads/`)
+
+## Cara Menjalankan Project
+
+### 1. Backend
+
+```bash
+cd backend
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/nathanchristiawan02/icon-commission-system.git
-git branch -M main
-git push -uf origin main
+
+Buat file `.env`:
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=02102002
+DB_NAME=icon_commission_db
+APP_PORT=8080
+JWT_SECRET=rahasia-super-aman-ganti-nanti
+
+Buat database (lewat psql atau pgAdmin):
+
+```sql
+CREATE DATABASE icon_commission_db;
 ```
 
-## Integrate with your tools
+Install dependency & jalankan:
 
-* [Set up project integrations](https://gitlab.com/nathanchristiawan02/icon-commission-system/-/settings/integrations)
+```bash
+go mod tidy
+go run main.go
+```
 
-## Collaborate with your team
+Server berjalan di `http://localhost:8080`. Struktur tabel akan dibuat otomatis oleh GORM AutoMigrate, dan admin default akan otomatis di-seed.
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+**Kredensial Admin Default:**
+Username: admin
+Password: admin123
 
-## Test and Deploy
+### 2. Frontend
 
-Use the built-in continuous integration in GitLab.
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+Aplikasi berjalan di `http://localhost:5173`.
 
-***
+## Dokumentasi API
 
-# Editing this README
+Koleksi Postman tersedia di file [`docs/Icon-Commission-System.postman_collection.json`](./docs/) — import ke Postman/Insomnia untuk mencoba seluruh endpoint API.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Catatan Migrasi Database
 
-## Suggestions for a good README
+Struktur database dikelola menggunakan **GORM AutoMigrate** selama tahap development untuk mempercepat iterasi skema. Sebagai dokumentasi resmi struktur akhir database, tersedia juga file migrasi SQL menggunakan **golang-migrate** di folder `backend/migrations_sql/`, berisi definisi `up`/`down` untuk seluruh tabel (admins, master data, clients, commissions, commission_items, commission_photos, cash_outs).
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## Struktur Folder Backend
 
-## Name
-Choose a self-explaining name for your project.
+backend/
+├── config/ → koneksi database
+├── internal/
+│ ├── entity/ → model data (per modul: admin, client, master, commission, cashout)
+│ ├── dto/ → request/response struct + validasi
+│ ├── repository/ → akses database (GORM)
+│ ├── usecase/ → business logic
+│ ├── handler/ → controller Gin
+│ ├── middleware/ → JWT auth middleware
+│ └── router/ → definisi route per modul
+├── migrations_sql/ → file migrasi SQL (golang-migrate)
+├── uploads/ → penyimpanan file upload
+└── main.go
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+## Struktur Folder Frontend
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+frontend/src/
+├── views/ → halaman per fitur (dashboard, commission, client, master, cashflow)
+├── components/ → komponen reusable (table, modal, toast, confirm, input, upload)
+├── composables/ → logic reusable (auth, commission, client, master, cashout)
+├── services/ → axios instance + interceptor
+└── router/ → konfigurasi vue-router
