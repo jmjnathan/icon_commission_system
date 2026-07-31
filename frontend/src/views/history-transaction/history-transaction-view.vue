@@ -196,7 +196,7 @@ const paginatedItems = computed(() => {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div>
           <label class="block text-sm font-semibold text-[#6B5D45] mb-2">
-            Status
+            Nama Klien
           </label>
           <InputTextComponent
             label=""
