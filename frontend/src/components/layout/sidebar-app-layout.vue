@@ -12,6 +12,7 @@ import {
   Notebook,
   BriefcaseBusiness,
 } from "lucide-vue-next";
+import logo from "../../assets/logo.png";
 
 const route = useRoute();
 const { logout } = useAuth();
@@ -32,6 +33,11 @@ const transactionItems = [
 
 const cashflowItem = [
   {
+    name: "Arus Kas Keluar",
+    path: "/cashflow/cash-out",
+    icon: BriefcaseBusiness,
+  },
+  {
     name: "Laporan Keuangan",
     path: "/cashflow/report",
     icon: BriefcaseBusiness,
@@ -49,14 +55,27 @@ const masterItems = [
 <template>
   <div class="min-h-screen flex bg-[#F5EFE3]">
     <!-- Sidebar -->
-    <aside class="w-64 bg-[#0F1C2E] text-[#D9CBB0] flex flex-col shrink-0">
-      <div class="px-6 py-6 border-b border-white/10">
-        <h1 class="text-[#C9A24B] font-semibold text-lg tracking-wide">
-          DOMINIC'S ART
-        </h1>
+    <aside
+      class="fixed top-0 left-0 h-screen w-64 bg-[#0F1C2E] text-[#D9CBB0] flex flex-col print:hidden z-50">
+      <div class="px-6 py-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <img
+            :src="logo"
+            alt="Dominic's Art"
+            class="w-10 h-10 object-contain shrink-0" />
+
+          <div class="min-w-0">
+            <h1 class="text-[#C9A24B] font-bold text-lg leading-tight">
+              DOMINIC'S ART
+            </h1>
+            <p class="mt-1 text-[11px] italic text-[#A6926A]">
+              Sub Tutela Matris
+            </p>
+          </div>
+        </div>
       </div>
 
-      <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         <p
           class="px-3 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
           Navigasi
@@ -153,7 +172,7 @@ const masterItems = [
     </aside>
 
     <!-- Main content -->
-    <div class="flex-1 flex flex-col min-w-0">
+    <div class="flex-1 flex flex-col min-w-0 ml-64 print:ml-0">
       <main class="flex-1 overflow-y-auto p-8">
         <slot />
       </main>

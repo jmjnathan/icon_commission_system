@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useAuth } from "../composables/useAuth";
+import logo from "../assets/logo.png";
 
 const username = ref("");
 const password = ref("");
@@ -13,24 +14,20 @@ function handleSubmit() {
 
 <template>
   <div class="min-h-screen flex items-center justify-center bg-[#F5EFE3] px-4">
-    <div class="w-full max-w-sm">
-      <div class="flex justify-center mb-8">
-        <div class="relative w-16 h-16">
-          <div
-            class="absolute inset-0 rounded-full border-2 border-[#B08D3F]"></div>
-          <div
-            class="absolute inset-2 rounded-full border border-[#B08D3F]/50"></div>
-          <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-3 h-3 rounded-full bg-[#7A1F2B]"></div>
-          </div>
+    <div
+      class="w-full max-w-lg rounded-3xl bg-white border border-[#E8DCC7] shadow-xl px-10 py-10">
+      <!-- Brand -->
+      <div class="text-center mb-8">
+        <div class="h-20 w-20 mx-auto mb-4 rounded-full overflow-hidden">
+          <img
+            :src="logo"
+            alt="Dominic's Art"
+            class="w-full h-full object-cover" />
         </div>
+        <h1 class="text-3xl font-serif text-[#7A1F2B]">Dominic's Art</h1>
+
+        <p class="italic text-[#8A7A5C] mt-1">Sub Tutela Matris</p>
       </div>
-
-      <h1 class="text-center font-serif text-2xl text-[#3A2E1F] mb-1">
-        Dominic's Art
-      </h1>
-      <p class="text-center text-sm text-[#8A7A5C] mb-8">Manage Your Project</p>
-
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div>
           <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">

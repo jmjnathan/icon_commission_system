@@ -15,6 +15,7 @@ import {
 import { useToast } from "../../composables/etc/useToast.ts";
 import { useConfirm } from "../../composables/etc/useConfirm.ts";
 import CommissionDetailModal from "./modals/commission-detail-modal.vue";
+import PaginationComponent from "../../components/pagination/pagination-component.vue";
 
 const { commissions, isLoading, fetchAll, updateStatus } = useCommission();
 const username = localStorage.getItem("username") || "Admin";
@@ -210,6 +211,8 @@ function closeDetailModal() {
   showDetailModal.value = false;
   selectedCommission.value = null;
 }
+const currentPage = ref(1);
+const perPage = ref(50);
 </script>
 
 <template>
@@ -264,63 +267,79 @@ function closeDetailModal() {
       Pesanan Berlangsung
     </h2>
 
-    <DataTablesComponent
-      :columns="columns"
-      :items="ongoingCommissions"
-      :is-loading="isLoading"
-      empty-message="Tidak ada pesanan yang sedang berlangsung."
-      row-key="id"
-      class="mb-8">
-      <template #aksi="{ item }">
-        <div class="flex gap-2">
-          <button
-            @click="openDetailModal(item)"
-            class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#C9A24B]/15 text-[#8A6D1F] hover:bg-[#C9A24B]/25 transition"
-            title="Lihat detail">
-            <Eye :size="16" />
-          </button>
-          <button
-            @click="handleAdvanceStatus(item)"
-            class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#3B6FA8]/15 text-[#3B6FA8] hover:bg-[#3B6FA8]/25 transition"
-            :title="`Ubah ke ${statusLabel[nextStatus(item.status) ?? '']}`">
-            <Zap :size="16" />
-          </button>
-        </div>
-      </template>
-      <template #client="{ item }">
-        <span class="text-[#3A2E1F] font-medium">{{ item.client?.name }}</span>
-      </template>
-
-      <template #subject="{ item }">
-        <p class="text-[#3A2E1F]">{{ subjectSummary(item) }}</p>
-        <p class="text-xs text-[#8A7A5C]">{{ detailSummary(item) }}</p>
-      </template>
-
-      <template #deadline="{ item }">
-        <span class="text-[#6B5D45]">{{ formatDate(item.deadline) }}</span>
-      </template>
-
-      <template #progress="{ item }">
-        <div class="flex items-center gap-2">
-          <div class="w-24 h-2 bg-[#E5D9BF] rounded-full overflow-hidden">
-            <div
-              class="h-full rounded-full"
-              :style="{
-                width: progressPercent(item.status) + '%',
-                backgroundColor: progressColor(item.status),
-              }"></div>
+    <div class="bg-white border border-[#E5D9BF] rounded-xl p-2 mb-5">
+      <div class="flex justify-end">
+        <PaginationComponent
+          v-model:current-page="currentPage"
+          v-model:per-page="perPage"
+          :total-items="ongoingCommissions.length" />
+      </div>
+      <DataTablesComponent
+        :columns="columns"
+        :items="ongoingCommissions"
+        :is-loading="isLoading"
+        empty-message="Tidak ada pesanan yang sedang berlangsung."
+        row-key="id"
+        class="mb-2">
+        <template #aksi="{ item }">
+          <div class="flex gap-2">
+            <button
+              @click="openDetailModal(item)"
+              class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#C9A24B]/15 text-[#8A6D1F] hover:bg-[#C9A24B]/25 transition"
+              title="Lihat detail">
+              <Eye :size="16" />
+            </button>
+            <button
+              @click="handleAdvanceStatus(item)"
+              class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#3B6FA8]/15 text-[#3B6FA8] hover:bg-[#3B6FA8]/25 transition"
+              :title="`Ubah ke ${statusLabel[nextStatus(item.status) ?? '']}`">
+              <Zap :size="16" />
+            </button>
           </div>
-          <span class="text-xs text-[#6B5D45]"
-            >{{ progressPercent(item.status) }}%</span
-          >
-        </div>
-        <span
-          class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium"
-          :class="statusBadge(item.status)">
-          {{ item.status }}
-        </span>
-      </template></DataTablesComponent
-    >
+        </template>
+        <template #client="{ item }">
+          <span class="text-[#3A2E1F] font-medium">{{
+            item.client?.name
+          }}</span>
+        </template>
+
+        <template #subject="{ item }">
+          <p class="text-[#3A2E1F]">{{ subjectSummary(item) }}</p>
+          <p class="text-xs text-[#8A7A5C]">{{ detailSummary(item) }}</p>
+        </template>
+
+        <template #deadline="{ item }">
+          <span class="text-[#6B5D45]">{{ formatDate(item.deadline) }}</span>
+        </template>
+
+        <template #progress="{ item }">
+          <div class="flex items-center gap-2">
+            <div class="w-24 h-2 bg-[#E5D9BF] rounded-full overflow-hidden">
+              <div
+                class="h-full rounded-full"
+                :style="{
+                  width: progressPercent(item.status) + '%',
+                  backgroundColor: progressColor(item.status),
+                }"></div>
+            </div>
+            <span class="text-xs text-[#6B5D45]"
+              >{{ progressPercent(item.status) }}%</span
+            >
+          </div>
+          <span
+            class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium"
+            :class="statusBadge(item.status)">
+            {{ item.status }}
+          </span>
+        </template>
+      </DataTablesComponent>
+      <div class="flex justify-end">
+        <PaginationComponent
+          v-model:current-page="currentPage"
+          v-model:per-page="perPage"
+          :total-items="ongoingCommissions.length" />
+      </div>
+    </div>
   </AppLayout>
   <CommissionDetailModal
     :visible="showDetailModal"

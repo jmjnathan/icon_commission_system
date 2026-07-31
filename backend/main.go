@@ -30,6 +30,11 @@ import (
 	uploadHandler "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/upload"
 	commissionRepoPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/commission"
 	commissionUsecasePkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/commission"
+
+	cashoutHandlerPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/cashflow/cashout"
+	cashoutRepoPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/cashflow/cashout"
+	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/router/cashflow/cashout"
+	cashoutUsecasePkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/cashflow/cashout"
 )
 
 func main() {
@@ -75,6 +80,11 @@ func main() {
 	commissionUC := commissionUsecasePkg.NewCommissionUsecase(commissionRepository)
 	commissionH := commissionHandlerPkg.NewCommissionHandler(commissionUC)
 
+	// Cashout
+	cashOutRepository := cashoutRepoPkg.NewCashOutRepository(config.DB)
+cashOutUC := cashoutUsecasePkg.NewCashOutUsecase(cashOutRepository)
+cashOutH := cashoutHandlerPkg.NewCashOutHandler(cashOutUC)
+
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
@@ -100,6 +110,7 @@ func main() {
 		master.RegisterMasterStyleRoutes(protected, masterStyleH)
 		transaction.RegisterClientRoutes(protected, clientH)
 		commission.RegisterCommissionRoutes(protected, commissionH)
+		cashout.RegisterCashOutRoutes(protected, cashOutH)
 		protected.POST("/upload", uploadHandler.UploadFile)
 	}
 

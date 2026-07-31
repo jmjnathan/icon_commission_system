@@ -6,6 +6,7 @@ import (
 	"os"
 
 	admin "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/admin"
+	cashoutEntity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/cashflow/cashout"
 	client "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/client"
 	commissionEntity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/commission"
 	master "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/master"
@@ -42,6 +43,7 @@ func ConnectDatabase() {
 		&commissionEntity.Commission{},
 		&commissionEntity.CommissionItem{},
 		&commissionEntity.CommissionPhoto{},
+		&cashoutEntity.CashOut{},
 	)
 
 	if err != nil {

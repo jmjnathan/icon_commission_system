@@ -1,9 +1,10 @@
 <script setup lang="ts">
-interface Column {
+
+export interface Column {
   key: string;
   label: string;
   width?: string;
-  align?: "left" | "center" | "right";
+  align?: 'left' | 'center' | 'right';
 }
 
 defineProps<{

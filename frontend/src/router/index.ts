@@ -7,6 +7,9 @@ import StyleView from "../views/master/style/style-view.vue";
 import ObjectView from "../views/master/object/object-view.vue";
 import ClientView from "../views/transaction/client/client-view.vue";
 import CommissionView from "../views/transaction/commission/commission-view.vue";
+import HistoryTransactionView from "../views/history-transaction/history-transaction-view.vue";
+import CashoutView from "../views/cashflow/cashout/cashout-view.vue";
+import FinancialReportView from "../views/cashflow/financial-report/financial-report-view.vue";
 
 const routes = [
   {
@@ -54,6 +57,24 @@ const routes = [
     path: "/transaction/commissions",
     name: "CreateCommission",
     component: CommissionView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/transaction/history-transaction",
+    name: "HistoryTransaction",
+    component: HistoryTransactionView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/cashflow/cash-out",
+    name: "CashOut",
+    component: CashoutView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/cashflow/report",
+    name: "FinancialReport",
+    component: FinancialReportView,
     meta: { requiresAuth: true },
   },
 ];
