@@ -21,11 +21,15 @@ interface Column {
 }
 const { items, isLoading, fetchAll, create, update, remove } = useClientApi();
 
-onMounted(fetchAll);
+onMounted(async () => {
+  isLoading.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  fetchAll();
+});
+
 const toast = useToast();
 const { confirm } = useConfirm();
 const search = ref("");
-const statusFilter = ref<"all" | "active" | "inactive">("all");
 const currentPage = ref(1);
 const perPage = ref(50);
 

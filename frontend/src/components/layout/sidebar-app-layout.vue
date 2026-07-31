@@ -8,9 +8,11 @@ import {
   User,
   Package,
   LogOut,
-  ChevronDown,
   Notebook,
   BriefcaseBusiness,
+  Ruler,
+  PaintBucket,
+  PersonStanding,
 } from "lucide-vue-next";
 import logo from "../../assets/logo.png";
 
@@ -45,10 +47,10 @@ const cashflowItem = [
 ];
 
 const masterItems = [
-  { name: "Ukuran", path: "/master/size" },
-  { name: "Material", path: "/master/material" },
-  { name: "Gaya Lukisan", path: "/master/styles" },
-  { name: "Objek Lukisan", path: "/master/saints" },
+  { name: "Ukuran", path: "/master/size", icon: Ruler },
+  { name: "Material", path: "/master/material", icon: Package },
+  { name: "Gaya Lukisan", path: "/master/styles", icon: PaintBucket },
+  { name: "Objek Lukisan", path: "/master/saints", icon: PersonStanding },
 ];
 </script>
 
@@ -133,29 +135,18 @@ const masterItems = [
           class="px-3 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mt-6 mb-2">
           Master Data
         </p>
-        <button
-          @click="masterOpen = !masterOpen"
-          class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-[#B0A588] hover:bg-white/5 hover:text-[#D9CBB0] transition">
-          <span class="flex items-center gap-3">
-            <Package :size="18" />
-            Data Master
-          </span>
-          <ChevronDown
-            :size="14"
-            class="transition-transform"
-            :class="masterOpen ? 'rotate-180' : ''" />
-        </button>
-        <div v-if="masterOpen" class="pl-4 space-y-1">
+        <div v-if="masterOpen" class=" space-y-1">
           <RouterLink
             v-for="item in masterItems"
             :key="item.path"
             :to="item.path"
-            class="block px-3 py-2 rounded-lg text-sm transition"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition"
             :class="
               route.path === item.path
                 ? 'bg-[#1E2E44] text-[#C9A24B] font-medium'
                 : 'text-[#B0A588] hover:bg-white/5 hover:text-[#D9CBB0]'
             ">
+            <component :is="item.icon" :size="18" />
             {{ item.name }}
           </RouterLink>
         </div>

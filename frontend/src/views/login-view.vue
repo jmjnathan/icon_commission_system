@@ -1,14 +1,33 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useAuth } from "../composables/useAuth";
+import InputTextComponent from "../components/input-text/input-text-component.vue";
+import InputPasswordComponent from "../components/input-text/input-password-component.vue";
 import logo from "../assets/logo.png";
 
 const username = ref("");
 const password = ref("");
 const { login, isLoading, errorMessage } = useAuth();
-console.log("LoginView loaded");
-function handleSubmit() {
-  login(username.value, password.value);
+
+const validationError = ref("");
+
+async function handleSubmit() {
+  validationError.value = "";
+
+  if (!username.value.trim() && !password.value.trim()) {
+    validationError.value = "Username dan password wajib diisi";
+    return;
+  }
+  if (!username.value.trim()) {
+    validationError.value = "Username wajib diisi";
+    return;
+  }
+  if (!password.value.trim()) {
+    validationError.value = "Password wajib diisi";
+    return;
+  }
+
+  await login(username.value, password.value);
 }
 </script>
 
@@ -25,38 +44,26 @@ function handleSubmit() {
             class="w-full h-full object-cover" />
         </div>
         <h1 class="text-3xl font-serif text-[#7A1F2B]">Dominic's Art</h1>
-
         <p class="italic text-[#8A7A5C] mt-1">Sub Tutela Matris</p>
       </div>
-      <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div>
-          <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
-            Username
-          </label>
-          <input
-            v-model="username"
-            type="text"
-            required
-            class="w-full px-4 py-2.5 bg-white border border-[#D9CBB0] rounded-lg text-[#3A2E1F] placeholder-[#B0A588] focus:outline-none focus:ring-2 focus:ring-[#B08D3F]/40 focus:border-[#B08D3F] transition"
-            placeholder="Masukkan username" />
-        </div>
 
-        <div>
-          <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
-            Password
-          </label>
-          <input
-            v-model="password"
-            type="password"
-            required
-            class="w-full px-4 py-2.5 bg-white border border-[#D9CBB0] rounded-lg text-[#3A2E1F] placeholder-[#B0A588] focus:outline-none focus:ring-2 focus:ring-[#B08D3F]/40 focus:border-[#B08D3F] transition"
-            placeholder="Masukkan password" />
-        </div>
+      <form @submit.prevent="handleSubmit" class="space-y-4">
+        <InputTextComponent
+          label="Username"
+          v-model="username"
+          required
+          placeholder="Masukkan username" />
+
+        <InputPasswordComponent
+          label="Password"
+          v-model="password"
+          required
+          placeholder="Masukkan password" />
 
         <p
-          v-if="errorMessage"
+          v-if="validationError || errorMessage"
           class="text-sm text-[#7A1F2B] bg-[#7A1F2B]/10 px-3 py-2 rounded-lg">
-          {{ errorMessage }}
+          {{ validationError || errorMessage }}
         </p>
 
         <button

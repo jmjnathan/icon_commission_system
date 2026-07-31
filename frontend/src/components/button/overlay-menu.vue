@@ -154,7 +154,7 @@ onUnmounted(() => {
       <div
         v-if="isOpen"
         ref="menuRef"
-        class="fixed w-44 bg-white rounded-lg shadow-lg border border-[#E5D9BF] py-1 z-50"
+        class="absolute w-44 bg-white rounded-lg shadow-lg border border-[#E5D9BF] py-1 z-50"
         :style="{
           top: `${menuPosition.top}px`,
           left: `${menuPosition.left}px`,

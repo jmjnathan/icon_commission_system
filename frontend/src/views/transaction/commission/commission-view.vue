@@ -179,6 +179,7 @@ function resetForm() {
         <div class="grid grid-cols-12 gap-6">
           <div class="col-span-6">
             <SearchableSelect
+              required
               v-model="clientId"
               label="Client"
               placeholder="Pilih client"

@@ -22,7 +22,12 @@ interface Column {
 
 const { items, isLoading, fetchAll, create, update, remove } = useMasterSize();
 
-onMounted(fetchAll);
+onMounted(async () => {
+  isLoading.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 500)); // delay 2 detik paksa
+  fetchAll();
+});
+
 const toast = useToast();
 const { confirm } = useConfirm();
 const search = ref("");

@@ -20,7 +20,11 @@ interface Column {
 const { commissions, isLoading, fetchAll } = useCommission();
 const toast = useToast();
 
-onMounted(fetchAll);
+onMounted(async () => {
+  isLoading.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  fetchAll();
+});
 
 const startDate = ref("");
 const endDate = ref("");
@@ -242,39 +246,62 @@ const paginatedItems = computed(() => {
       </div>
       <div
         class="rounded-2xl border border-[#E8DCC7] bg-[#FBF8F2] px-6 py-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <!-- Kiri -->
-        <div>
-          <p class="text-sm font-medium text-[#8A7A5C]">
-            Total Penghasilan Kotor
-          </p>
+        <!-- Skeleton -->
+        <template v-if="isLoading">
+          <div class="animate-pulse">
+            <div class="h-4 w-40 bg-[#E8DCC7] rounded mb-2"></div>
+            <div class="h-9 w-56 bg-[#E8DCC7] rounded mb-2"></div>
+            <div class="h-3 w-32 bg-[#E8DCC7] rounded"></div>
+          </div>
 
-          <h2 class="text-4xl font-bold text-[#7A1F2B] mt-1">
-            Rp {{ grossIncome.toLocaleString("id-ID") }}
-          </h2>
+          <div
+            class="flex flex-wrap items-center gap-6 lg:justify-end animate-pulse">
+            <div class="text-center">
+              <div class="h-3 w-16 bg-[#E8DCC7] rounded mb-2 mx-auto"></div>
+              <div class="h-7 w-10 bg-[#E8DCC7] rounded mx-auto"></div>
+            </div>
+            <div class="h-10 w-px bg-[#E8DCC7] hidden sm:block"></div>
+            <div class="text-center">
+              <div class="h-3 w-16 bg-[#E8DCC7] rounded mb-2 mx-auto"></div>
+              <div class="h-7 w-10 bg-[#E8DCC7] rounded mx-auto"></div>
+            </div>
+          </div>
+        </template>
 
-          <p class="text-sm text-[#8A7A5C] mt-1">
-            Berdasarkan filter yang dipilih
-          </p>
-        </div>
-
-        <!-- Kanan -->
-        <div class="flex flex-wrap items-center gap-6 lg:justify-end text-sm">
-          <div class="text-center">
-            <p class="text-[#8A7A5C]">Transaksi</p>
-            <p class="text-2xl font-bold text-[#3A2E1F]">
-              {{ historyCommissions.length }}
+        <!-- Data asli -->
+        <template v-else>
+          <!-- Kiri -->
+          <div>
+            <p class="text-sm font-medium text-[#8A7A5C]">
+              Total Penghasilan Kotor
+            </p>
+            <h2 class="text-4xl font-bold text-[#7A1F2B] mt-1">
+              Rp {{ grossIncome.toLocaleString("id-ID") }}
+            </h2>
+            <p class="text-sm text-[#8A7A5C] mt-1">
+              Berdasarkan filter yang dipilih
             </p>
           </div>
 
-          <div class="h-10 w-px bg-[#E8DCC7] hidden sm:block"></div>
+          <!-- Kanan -->
+          <div class="flex flex-wrap items-center gap-6 lg:justify-end text-sm">
+            <div class="text-center">
+              <p class="text-[#8A7A5C]">Transaksi</p>
+              <p class="text-2xl font-bold text-[#3A2E1F]">
+                {{ historyCommissions.length }}
+              </p>
+            </div>
 
-          <div class="text-center">
-            <p class="text-[#8A7A5C]">Total Icon</p>
-            <p class="text-2xl font-bold text-[#3A2E1F]">
-              {{ totalIcons }}
-            </p>
+            <div class="h-10 w-px bg-[#E8DCC7] hidden sm:block"></div>
+
+            <div class="text-center">
+              <p class="text-[#8A7A5C]">Total Icon</p>
+              <p class="text-2xl font-bold text-[#3A2E1F]">
+                {{ totalIcons }}
+              </p>
+            </div>
           </div>
-        </div>
+        </template>
       </div>
       <div class="flex justify-end">
         <PaginationComponent

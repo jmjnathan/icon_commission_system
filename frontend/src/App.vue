@@ -4,7 +4,7 @@ import ConfirmModal from "./components/modal/confirm-modal.vue";
 </script>
 
 <template>
-  <div class="bg-[#F5EFE3]">
+  <div class="min-h-screen bg-[#F5EFE3]">
     <router-view />
     <ToastContainer />
     <ConfirmModal />

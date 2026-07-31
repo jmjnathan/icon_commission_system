@@ -7,7 +7,7 @@ import {
 } from "../../../composables/master/m_style.ts";
 import { useToast } from "../../../composables/etc/useToast.ts";
 import { useConfirm } from "../../../composables/etc/useConfirm.ts";
-import { Pencil, Trash2 } from "lucide-vue-next";
+import { Plus, Pencil, Trash2 } from "lucide-vue-next";
 import ChildModalWrapper from "../../../components/modal/child-modal-wrapper.vue";
 import DataTablesComponent from "../../../components/tables/data-tables-component.vue";
 import PaginationComponent from "../../../components/pagination/pagination-component.vue";
@@ -21,7 +21,12 @@ interface Column {
 }
 const { items, isLoading, fetchAll, create, update, remove } = useMasterStyle();
 
-onMounted(fetchAll);
+onMounted(async () => {
+  isLoading.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 500)); // delay 2 detik paksa
+  fetchAll();
+});
+
 const toast = useToast();
 const { confirm } = useConfirm();
 const search = ref("");

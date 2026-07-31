@@ -29,7 +29,9 @@ const { commissions, fetchAll: fetchCommissions } = useCommission();
 const toast = useToast();
 const { confirm } = useConfirm();
 
-onMounted(() => {
+onMounted(async () => {
+  isLoading.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 500));
   fetchAll();
   fetchCommissions();
 });
@@ -265,53 +267,71 @@ const perPage = ref(50);
 
     <!-- Ringkasan Saldo -->
     <div class="grid grid-cols-3 gap-4 mb-8">
-      <div
-        class="bg-white border border-[#E5D9BF] rounded-xl p-4 flex items-center justify-between">
-        <div>
-          <p class="text-xs font-medium text-[#4C8C5B] tracking-wide">
-            TOTAL PEMASUKAN
-          </p>
-          <p class="text-lg font-semibold text-[#3A2E1F] mt-1">
-            Rp {{ totalIncome.toLocaleString("id-ID") }}
-          </p>
-        </div>
+      <!-- Skeleton -->
+      <template v-if="isLoading">
         <div
-          class="w-10 h-10 rounded-full bg-[#4C8C5B]/15 flex items-center justify-center">
-          <TrendingUp :size="20" class="text-[#4C8C5B]" />
+          v-for="n in 3"
+          :key="`skeleton-${n}`"
+          class="bg-white border border-[#E5D9BF] rounded-xl p-4 flex items-center justify-between animate-pulse">
+          <div class="flex-1">
+            <div class="h-3 w-24 bg-[#E5D9BF] rounded mb-2"></div>
+            <div class="h-5 w-28 bg-[#E5D9BF] rounded"></div>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-[#E5D9BF] shrink-0"></div>
         </div>
-      </div>
+      </template>
 
-      <div
-        class="bg-white border border-[#E5D9BF] rounded-xl p-4 flex items-center justify-between">
-        <div>
-          <p class="text-xs font-medium text-[#B23A32] tracking-wide">
-            TOTAL PENGELUARAN
-          </p>
-          <p class="text-lg font-semibold text-[#3A2E1F] mt-1">
-            Rp {{ totalExpense.toLocaleString("id-ID") }}
-          </p>
-        </div>
+      <!-- Data asli -->
+      <template v-else>
         <div
-          class="w-10 h-10 rounded-full bg-[#B23A32]/15 flex items-center justify-center">
-          <TrendingDown :size="20" class="text-[#B23A32]" />
+          class="bg-white border border-[#E5D9BF] rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-medium text-[#4C8C5B] tracking-wide">
+              TOTAL PEMASUKAN
+            </p>
+            <p class="text-lg font-semibold text-[#3A2E1F] mt-1">
+              Rp {{ totalIncome.toLocaleString("id-ID") }}
+            </p>
+          </div>
+          <div
+            class="w-10 h-10 rounded-full bg-[#4C8C5B]/15 flex items-center justify-center">
+            <TrendingUp :size="20" class="text-[#4C8C5B]" />
+          </div>
         </div>
-      </div>
 
-      <div
-        class="bg-white border border-[#E5D9BF] rounded-xl p-4 flex items-center justify-between">
-        <div>
-          <p class="text-xs font-medium text-[#C9A24B] tracking-wide">SALDO</p>
-          <p class="text-lg font-semibold text-[#3A2E1F] mt-1">
-            Rp {{ balance.toLocaleString("id-ID") }}
-          </p>
-        </div>
         <div
-          class="w-10 h-10 rounded-full bg-[#C9A24B]/15 flex items-center justify-center">
-          <Wallet :size="20" class="text-[#C9A24B]" />
+          class="bg-white border border-[#E5D9BF] rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-medium text-[#B23A32] tracking-wide">
+              TOTAL PENGELUARAN
+            </p>
+            <p class="text-lg font-semibold text-[#3A2E1F] mt-1">
+              Rp {{ totalExpense.toLocaleString("id-ID") }}
+            </p>
+          </div>
+          <div
+            class="w-10 h-10 rounded-full bg-[#B23A32]/15 flex items-center justify-center">
+            <TrendingDown :size="20" class="text-[#B23A32]" />
+          </div>
         </div>
-      </div>
+
+        <div
+          class="bg-white border border-[#E5D9BF] rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-medium text-[#C9A24B] tracking-wide">
+              SALDO
+            </p>
+            <p class="text-lg font-semibold text-[#3A2E1F] mt-1">
+              Rp {{ balance.toLocaleString("id-ID") }}
+            </p>
+          </div>
+          <div
+            class="w-10 h-10 rounded-full bg-[#C9A24B]/15 flex items-center justify-center">
+            <Wallet :size="20" class="text-[#C9A24B]" />
+          </div>
+        </div>
+      </template>
     </div>
-
     <div class="bg-white border border-[#E5D9BF] rounded-xl p-4 mb-6">
       <div
         class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
@@ -339,8 +359,8 @@ const perPage = ref(50);
 
           <button
             @click="setThisMonth"
-            class="px-3 py-2 text-sm text-[#7A1F2B] border border-[#7A1F2B]/30 rounded-lg hover:bg-[#7A1F2B]/5 transition">
-            Bulan Ini
+            class="px-3 py-2 text-sm text-[#4C8C5B] border border-[#7A1F2B]/30 rounded-lg hover:bg-[#7A1F2B]/5 transition">
+            Atur Ke Bulan Ini
           </button>
 
           <button
