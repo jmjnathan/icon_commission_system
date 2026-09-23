@@ -6,8 +6,6 @@ import (
 	adminsistrator "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/admin"
 )
 
-
-
 type Client struct {
 	ID                     uint       `gorm:"primaryKey" json:"id"`
 	Name                   string     `gorm:"not null" json:"name"`

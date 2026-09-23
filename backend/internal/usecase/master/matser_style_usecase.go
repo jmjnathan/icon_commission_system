@@ -30,7 +30,7 @@ func (u *masterStyleUsecase) GetAll() ([]entity.MasterStyle, error) {
 
 func (u *masterStyleUsecase) Create(req dto.MasterStyleRequest, username string) (*entity.MasterStyle, error) {
 	material := &entity.MasterStyle{
-		Name: req.Name,
+		Name:   req.Name,
 		Remark: req.Remark,
 		BaseModel: adminsistrator.BaseModel{
 			Status:          "active",

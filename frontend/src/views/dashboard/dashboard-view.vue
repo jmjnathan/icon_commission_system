@@ -7,6 +7,7 @@ import {
   onBeforeUnmount,
   nextTick,
 } from "vue";
+import type { Commission } from "../../composables/commission/useCommission.ts";
 import AppLayout from "../../components/layout/sidebar-app-layout.vue";
 import { useCommission } from "../../composables/commission/useCommission.ts";
 import NotificationComponent from "../../components/notification/notification-component.vue";
@@ -27,6 +28,7 @@ import { useConfirm } from "../../composables/etc/useConfirm.ts";
 import CommissionDetailModal from "./modals/commission-detail-modal.vue";
 import PaginationComponent from "../../components/pagination/pagination-component.vue";
 import { useCashOut } from "../../composables/useCashout.ts";
+import ProductionCalendar from "../../components/date/producttion-calendar.vue";
 import {
   Chart,
   BarController,
@@ -285,7 +287,94 @@ function closeDetailModal() {
 const currentPage = ref(1);
 const perPage = ref(50);
 
-// ===== Grafik: Barang/Subjek Paling Banyak Dipesan =====
+const calendarDate = ref(new Date());
+
+const calendarYear = computed(() => calendarDate.value.getFullYear());
+const calendarMonth = computed(() => calendarDate.value.getMonth());
+
+const monthNames = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+
+const calendarTitle = computed(
+  () => `${monthNames[calendarMonth.value]} ${calendarYear.value}`
+);
+
+function previousMonth() {
+  calendarDate.value = new Date(calendarYear.value, calendarMonth.value - 1, 1);
+}
+
+function nextMonth() {
+  calendarDate.value = new Date(calendarYear.value, calendarMonth.value + 1, 1);
+}
+
+function goToToday() {
+  calendarDate.value = new Date();
+}
+
+const calendarDays = computed(() => {
+  const year = calendarYear.value;
+  const month = calendarMonth.value;
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+
+  // Senin = 0, Minggu = 6
+  const startOffset = (firstDay.getDay() + 6) % 7;
+
+  const totalDays = lastDay.getDate();
+
+  const days = [];
+
+  for (let i = 0; i < startOffset; i++) {
+    days.push(null);
+  }
+
+  for (let day = 1; day <= totalDays; day++) {
+    days.push(new Date(year, month, day));
+  }
+
+  return days;
+});
+
+function isCommissionActiveOnDate(commission: Commission, date: Date) {
+  const orderDate = new Date(commission.order_date);
+  const deadline = new Date(commission.deadline);
+
+  const current = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+  const start = new Date(
+    orderDate.getFullYear(),
+    orderDate.getMonth(),
+    orderDate.getDate()
+  );
+
+  const end = new Date(
+    deadline.getFullYear(),
+    deadline.getMonth(),
+    deadline.getDate()
+  );
+
+  return current >= start && current <= end;
+}
+
+function getCommissionsForDate(date: Date) {
+  return commissions.value.filter((commission) =>
+    isCommissionActiveOnDate(commission, date)
+  );
+}
+
 const topSubjects = computed(() => {
   const counts: Record<string, number> = {};
 
@@ -361,11 +450,19 @@ watch(topSubjects, () => {
 onBeforeUnmount(() => {
   chartInstance?.destroy();
 });
+
+const showPaymentModal = ref(false);
+
+function handleAddPayment(commission: any) {
+  selectedCommission.value = commission;
+  showPaymentModal.value = true;
+}
+
+console.log('comission', commissions)
 </script>
 
 <template>
   <AppLayout>
-    <!-- Header: stack di mobile, row di desktop -->
     <div
       class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
       <div>
@@ -566,6 +663,13 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
+    <div class="bg-white border border-[#E5D9BF] rounded-xl p-2 mb-5">
+      <!-- component dashboard lainnya -->
+      <div class="m-2">
+        <ProductionCalendar />
+      </div>
+    </div>
+
     <h2 class="text-md font-semibold text-[#3A2E1F] mb-3">
       Subjek Paling Banyak Dipesan
     </h2>
@@ -596,5 +700,6 @@ onBeforeUnmount(() => {
   <CommissionDetailModal
     :visible="showDetailModal"
     :commission="selectedCommission"
-    @hide="closeDetailModal" />
+    @hide="showDetailModal = false"
+    @add-payment="handleAddPayment" />
 </template>

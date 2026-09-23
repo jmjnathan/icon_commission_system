@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/dto/master"
-	usecase"github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/master"
+	usecase "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/master"
 )
 
 type MasterSaintsHandler struct {

@@ -16,16 +16,37 @@ export interface CommissionPhoto {
   file_url: string;
 }
 
+export interface CommissionPayment {
+  id: number;
+  amount: number;
+  payment_type: string;
+  method: string;
+  paid_at: string;
+  notes: string;
+}
+
 export interface Commission {
   id: number;
-  client: { name: string };
+  client: {
+    name: string;
+    phone: string;
+    address: string;
+    city: string;
+    province: string;
+    postal_code: string;
+  };
   order_date: string;
   deadline: string;
   notes: string;
   status: string;
+  subtotal: number;
+  discount_type: string;
+  discount_value: number;
   total_price: number;
+  payment_status: string;
   items: CommissionItem[];
   photos?: CommissionPhoto[];
+  payments?: CommissionPayment[];
 }
 
 const commissions = ref<Commission[]>([]);
@@ -39,6 +60,7 @@ export function useCommission() {
     try {
       const response = await api.get("/commissions/get-list");
       commissions.value = response.data.data || [];
+      console.log("COMMISSION DATA:", commissions.value);
     } catch (err: any) {
       errorMessage.value =
         err.response?.data?.error || "Gagal memuat data komisi";
@@ -47,13 +69,27 @@ export function useCommission() {
     }
   }
 
+  async function create(payload: any) {
+    await api.post("/commissions/create", payload);
+    await fetchAll();
+  }
+
   async function updateStatus(id: number, status: string) {
     await api.patch(`/commissions/edit/${id}/status`, { status });
     await fetchAll();
   }
 
-  async function create(payload: any) {
-    await api.post("/commissions/create", payload);
+  async function addPayment(
+    commissionId: number,
+    payload: {
+      amount: number;
+      payment_type: string;
+      method: string;
+      notes?: string;
+    }
+  ) {
+    await api.post(`/commissions/${commissionId}/payments`, payload);
+    await fetchAll();
   }
 
   return {
@@ -61,7 +97,8 @@ export function useCommission() {
     isLoading,
     errorMessage,
     fetchAll,
-    updateStatus,
     create,
+    updateStatus,
+    addPayment,
   };
 }

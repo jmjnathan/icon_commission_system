@@ -70,6 +70,33 @@ func main() {
 	masterStyleUC := masterUsecase.NewMasterStyleUsecase(masterStyleRepository)
 	masterStyleH := masterHandler.NewMasterStyleHandler(masterStyleUC)
 
+	// Material Component
+	materialComponentRepository :=
+		masterRepo.NewMaterialComponentRepository(config.DB)
+
+	materialComponentUseCase :=
+		masterUsecase.NewMaterialComponentUsecase(
+			materialComponentRepository,
+		)
+
+	materialComponentH :=
+		masterHandler.NewMaterialComponentHandler(
+			materialComponentUseCase,
+		)
+
+	materialComponentVariantRepository :=
+		masterRepo.NewMaterialComponentVariantRepository(config.DB)
+
+	materialComponentVariantUC :=
+		masterUsecase.NewMaterialComponentVariantUsecase(
+			materialComponentVariantRepository,
+		)
+
+	materialComponentVariantH :=
+		masterHandler.NewMaterialComponentVariantHandler(
+			materialComponentVariantUC,
+		)
+
 	// Client
 	clientRepository := clientRepo.NewClientRepository(config.DB)
 	clientUC := clientUsecase.NewClientUsecase(clientRepository)
@@ -80,10 +107,24 @@ func main() {
 	commissionUC := commissionUsecasePkg.NewCommissionUsecase(commissionRepository)
 	commissionH := commissionHandlerPkg.NewCommissionHandler(commissionUC)
 
+	commissionItemMaterialRepository :=
+		commissionRepoPkg.NewCommissionItemMaterialRepository(config.DB)
+
+	commissionItemMaterialUseCase :=
+		commissionUsecasePkg.NewCommissionItemMaterialUsecase(
+			commissionItemMaterialRepository,
+			masterRepo.NewMaterialComponentVariantRepository(config.DB),
+		)
+
+	commissionItemMaterialHandler :=
+		commissionHandlerPkg.NewCommissionItemMaterialHandler(
+			commissionItemMaterialUseCase,
+		)
+
 	// Cashout
 	cashOutRepository := cashoutRepoPkg.NewCashOutRepository(config.DB)
-cashOutUC := cashoutUsecasePkg.NewCashOutUsecase(cashOutRepository)
-cashOutH := cashoutHandlerPkg.NewCashOutHandler(cashOutUC)
+	cashOutUC := cashoutUsecasePkg.NewCashOutUsecase(cashOutRepository)
+	cashOutH := cashoutHandlerPkg.NewCashOutHandler(cashOutUC)
 
 	r := gin.Default()
 
@@ -108,8 +149,20 @@ cashOutH := cashoutHandlerPkg.NewCashOutHandler(cashOutUC)
 		master.RegisterMasterMaterialRoutes(protected, masterMaterialH)
 		master.RegisterMasterSaintsRoutes(protected, masterSaintsH)
 		master.RegisterMasterStyleRoutes(protected, masterStyleH)
+		master.RegisterMaterialComponentRoutes(
+			protected,
+			materialComponentH,
+		)
+		master.RegisterMaterialComponentVariantRoutes(
+			protected,
+			materialComponentVariantH,
+		)
 		transaction.RegisterClientRoutes(protected, clientH)
 		commission.RegisterCommissionRoutes(protected, commissionH)
+		commission.RegisterCommissionItemMaterialRoutes(
+			protected,
+			commissionItemMaterialHandler,
+		)
 		cashout.RegisterCashOutRoutes(protected, cashOutH)
 		protected.POST("/upload", uploadHandler.UploadFile)
 	}

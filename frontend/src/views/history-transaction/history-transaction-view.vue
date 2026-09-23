@@ -10,6 +10,7 @@ import { printShippingLabel } from "../../utils/print-label.ts";
 import { Eye, Printer, CheckCircle2, PackageCheck } from "lucide-vue-next";
 import InputTextComponent from "../../components/input-text/input-text-component.vue";
 import PaginationComponent from "../../components/pagination/pagination-component.vue";
+import PaymentModal from "../transaction/commission/payment-modal.vue";
 
 interface Column {
   key: string;
@@ -31,6 +32,21 @@ const endDate = ref("");
 // const dateRange = ref<any>([]);
 const search = ref("");
 const selectedStatus = ref("all");
+
+const showPaymentModal = ref(false);
+const paymentCommission = ref<any>(null);
+
+function openPaymentModal(commission: any) {
+  showDetailModal.value = false; 
+  paymentCommission.value = commission;
+  showPaymentModal.value = true;
+}
+
+function closePaymentModal() {
+  showPaymentModal.value = false;
+  paymentCommission.value = null;
+  fetchAll(); // refresh biar modal detail juga ikut update kalau masih terbuka
+}
 
 const historyCommissions = computed(() => {
   return commissions.value.filter((c) => {
@@ -360,6 +376,18 @@ const paginatedItems = computed(() => {
     <CommissionDetailModal
       :visible="showDetailModal"
       :commission="selectedCommission"
-      @hide="closeDetailModal" />
+      @hide="closeDetailModal"
+      @add-payment="openPaymentModal" />
+
+    <PaymentModal
+      :visible="showPaymentModal"
+      :commission-id="paymentCommission?.id ?? null"
+      :remaining-amount="
+  paymentCommission
+    ? paymentCommission.total_price -
+      (paymentCommission.payments || []).reduce((s: number, p: any) => s + p.amount, 0)
+    : 0
+"
+      @hide="closePaymentModal" />
   </AppLayout>
 </template>

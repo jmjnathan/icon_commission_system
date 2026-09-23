@@ -7,8 +7,10 @@ import (
 
 func RegisterCommissionRoutes(rg *gin.RouterGroup, h *handler.CommissionHandler) {
 	rg.GET("/commissions/get-list", h.GetAll)
+	rg.GET("/.commission/item/:commissionItemId/materials", h.GetAll)
 	rg.POST("/commissions/create", h.Create)
 	rg.PUT("/commissions/edit/:id", h.Update)
 	rg.PATCH("/commissions/edit/:id/status", h.UpdateStatus)
 	rg.DELETE("/commissions/delete/:id", h.Delete)
+	rg.POST("/commissions/:id/payments", h.AddPayment)
 }

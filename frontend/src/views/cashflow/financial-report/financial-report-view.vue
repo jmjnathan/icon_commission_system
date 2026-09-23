@@ -5,6 +5,7 @@ import {
   TrendingDown,
   Wallet,
   Calendar,
+  Clock,
   Printer,
 } from "lucide-vue-next";
 import AppLayout from "../../../components/layout/sidebar-app-layout.vue";
@@ -69,10 +70,23 @@ const expenseInPeriod = computed(() =>
   cashOuts.value.filter((e) => isInPeriod(e.date))
 );
 
-const totalIncome = computed(() =>
-  incomeInPeriod.value.reduce((sum, c) => sum + (c.total_price || 0), 0)
-);
+const totalIncome = computed(() => {
+  let sum = 0;
+  incomeInPeriod.value.forEach((c) => {
+    const paid = (c.payments || []).reduce((s, p) => s + p.amount, 0);
+    sum += paid;
+  });
+  return sum;
+});
 
+const totalOutstanding = computed(() => {
+  let sum = 0;
+  incomeInPeriod.value.forEach((c) => {
+    const paid = (c.payments || []).reduce((s, p) => s + p.amount, 0);
+    sum += Math.max(c.total_price - paid, 0);
+  });
+  return sum;
+});
 const totalExpense = computed(() =>
   expenseInPeriod.value.reduce((sum, e) => sum + e.amount, 0)
 );
@@ -103,16 +117,21 @@ interface Transaction {
   description: string;
   category: string;
   amount: number;
+  paymentStatus?: string;
 }
 
 const allTransactions = computed<Transaction[]>(() => {
-  const incomes: Transaction[] = incomeInPeriod.value.map((c) => ({
-    date: c.order_date,
-    type: "in",
-    description: `Komisi #${c.id} — ${c.client?.name}`,
-    category: "Pemasukan Komisi",
-    amount: c.total_price,
-  }));
+  const incomes: Transaction[] = incomeInPeriod.value.map((c) => {
+    const paid = (c.payments || []).reduce((s, p) => s + p.amount, 0);
+    return {
+      date: c.order_date,
+      type: "in",
+      description: `Komisi #${c.id} — ${c.client?.name}`,
+      category: "Pemasukan Komisi",
+      amount: paid, // yang tercatat sebagai "amount" sekarang uang yang beneran masuk
+      paymentStatus: c.payment_status,
+    };
+  });
 
   const expenses: Transaction[] = expenseInPeriod.value.map((e) => ({
     date: e.date,
@@ -131,6 +150,7 @@ const columns: Column[] = [
   { key: "date", label: "Tanggal" },
   { key: "description", label: "Keterangan" },
   { key: "category", label: "Kategori" },
+  { key: "payment_status", label: "Status Bayar", align: "center" },
   { key: "amount", label: "Jumlah", align: "right" },
 ];
 
@@ -148,6 +168,24 @@ function formatRupiah(num: number) {
 
 function handlePrintReport() {
   window.print();
+}
+
+function paymentStatusBadge(status?: string) {
+  const map: Record<string, string> = {
+    unpaid: "bg-[#B23A32]/15 text-[#B23A32]",
+    partial: "bg-[#C9A24B]/15 text-[#8A6D1F]",
+    paid: "bg-[#4C8C5B]/15 text-[#4C8C5B]",
+  };
+  return map[status || ""] || "";
+}
+
+function paymentStatusLabel(status?: string) {
+  const map: Record<string, string> = {
+    unpaid: "Belum Bayar",
+    partial: "DP",
+    paid: "Lunas",
+  };
+  return status ? map[status] || status : "-";
 }
 </script>
 
@@ -182,6 +220,7 @@ function handlePrintReport() {
             {{ m.label }}
           </option>
         </select>
+
         <select
           v-model="selectedYear"
           class="px-4 py-2 border border-[#D9CBB0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A24B]/40">
@@ -203,7 +242,7 @@ function handlePrintReport() {
     </div>
 
     <!-- Ringkasan Laba Rugi -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-4 gap-4 mb-6">
       <div
         class="bg-white border border-[#E5D9BF] rounded-xl p-4 flex items-center justify-between">
         <div>
@@ -220,6 +259,22 @@ function handlePrintReport() {
         <div
           class="w-10 h-10 rounded-full bg-[#4C8C5B]/15 flex items-center justify-center shrink-0">
           <TrendingUp :size="20" class="text-[#4C8C5B]" />
+        </div>
+      </div>
+
+      <div
+        class="bg-white border border-[#E5D9BF] rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-[#C9A24B] tracking-wide">
+            PIUTANG (BELUM LUNAS)
+          </p>
+          <p class="text-lg font-semibold text-[#3A2E1F] mt-1">
+            Rp {{ formatRupiah(totalOutstanding) }}
+          </p>
+        </div>
+        <div
+          class="w-10 h-10 rounded-full bg-[#C9A24B]/15 flex items-center justify-center shrink-0">
+          <Clock :size="20" class="text-[#C9A24B]" />
         </div>
       </div>
 
@@ -319,6 +374,15 @@ function handlePrintReport() {
           ">
           {{ item.category }}
         </span>
+      </template>
+      <template #payment_status="{ item }">
+        <span
+          v-if="item.type === 'in'"
+          class="px-2 py-0.5 rounded-full text-xs font-medium"
+          :class="paymentStatusBadge(item.paymentStatus)">
+          {{ paymentStatusLabel(item.paymentStatus) }}
+        </span>
+        <span v-else class="text-xs text-[#B0A588]">—</span>
       </template>
       <template #amount="{ item }">
         <span

@@ -37,15 +37,18 @@ func ConnectDatabase() {
 		&admin.Admin{},
 		&master.MasterSize{},
 		&master.MasterMaterial{},
+		&master.MaterialComponent{},
+		&master.MaterialComponentVariant{},
 		&master.MasterSaints{},
 		&master.MasterStyle{},
 		&client.Client{},
 		&commissionEntity.Commission{},
 		&commissionEntity.CommissionItem{},
+		&commissionEntity.CommissionItemMaterial{},
 		&commissionEntity.CommissionPhoto{},
+		&commissionEntity.CommissionPayment{},
 		&cashoutEntity.CashOut{},
 	)
-
 	if err != nil {
 		log.Fatal("Gagal migrate: ", err)
 	}

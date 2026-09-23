@@ -10,6 +10,7 @@ import CommissionView from "../views/transaction/commission/commission-view.vue"
 import HistoryTransactionView from "../views/history-transaction/history-transaction-view.vue";
 import CashoutView from "../views/cashflow/cashout/cashout-view.vue";
 import FinancialReportView from "../views/cashflow/financial-report/financial-report-view.vue";
+import MaterialComponent from "../views/master/materialComponent/materialComponent.vue";
 
 const routes = [
   {
@@ -75,6 +76,12 @@ const routes = [
     path: "/cashflow/report",
     name: "FinancialReport",
     component: FinancialReportView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/master/material-components",
+    name: "MaterialComponent",
+    component: MaterialComponent,
     meta: { requiresAuth: true },
   },
 ];

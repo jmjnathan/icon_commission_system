@@ -48,7 +48,8 @@ const cashflowItem = [
 
 const masterItems = [
   { name: "Ukuran", path: "/master/size", icon: Ruler },
-  { name: "Material", path: "/master/material", icon: Package },
+  { name: "Bahan Media", path: "/master/material", icon: Package },
+  { name: "Component", path: "/master/material-components", icon: Package },
   { name: "Gaya Lukisan", path: "/master/styles", icon: PaintBucket },
   { name: "Objek Lukisan", path: "/master/saints", icon: PersonStanding },
 ];

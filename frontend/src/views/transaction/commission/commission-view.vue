@@ -2,11 +2,16 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Plus, Trash2, ArrowLeft } from "lucide-vue-next";
+
 import AppLayout from "../../../components/layout/sidebar-app-layout.vue";
 import SearchableSelect from "../../../components/input-text/serchable-select.vue";
 import InputText from "../../../components/input-text/input-text-component.vue";
 import InputNumber from "../../../components/input-text/input-number-component.vue";
 import PhotoPicker from "../../../components/upload-file/upload-photo.vue";
+// NOTE: sebelumnya dipake di template tapi belum pernah di-import.
+// Sesuaikan path-nya sama lokasi asli komponen ini di project kamu.
+import ChildModalWrapper from "../../../components/modal/child-modal-wrapper.vue";
+
 import { useCommission } from "../../../composables/commission/useCommission";
 import { useClientApi } from "../../../composables/commission/client_api.ts";
 import { useMasterSize } from "../../../composables/master/m_size.ts";
@@ -14,10 +19,15 @@ import { useMasterMaterial } from "../../../composables/master/m_material.ts";
 import { useMasterStyle } from "../../../composables/master/m_style.ts";
 import { useMasterSaints } from "../../../composables/master/m_saints.ts";
 import { useToast } from "../../../composables/etc/useToast.ts";
+import {
+  useCommissionItemMaterial,
+  type MaterialComponentVariant,
+} from "../../../composables/commission/useCommissionMaterial.ts";
 
 const router = useRouter();
 const toast = useToast();
 
+// ===== Composables (data master & submit) =====
 const { create } = useCommission();
 const { items: clients, fetchAll: fetchClients } = useClientApi();
 const { items: sizes, fetchAll: fetchSizes } = useMasterSize();
@@ -25,12 +35,28 @@ const { items: materials, fetchAll: fetchMaterials } = useMasterMaterial();
 const { items: styles, fetchAll: fetchStyles } = useMasterStyle();
 const { items: saints, fetchAll: fetchSaints } = useMasterSaints();
 
-onMounted(() => {
-  fetchClients();
-  fetchSizes();
-  fetchMaterials();
-  fetchStyles();
-  fetchSaints();
+const {
+  variants: materialVariants,
+  isVariantLoading,
+  fetchVariants,
+  // Berikut ini didestructure tapi belum kepake di file ini.
+  // Kelihatannya disiapin buat fitur edit/hapus material di kemudian hari.
+  // items: commissionMaterials,
+  // isLoading: isMaterialLoading,
+  // createMaterial,
+  // updateMaterial,
+  // deleteMaterial,
+} = useCommissionItemMaterial();
+
+onMounted(async () => {
+  await Promise.all([
+    fetchClients(),
+    fetchSizes(),
+    fetchMaterials(),
+    fetchVariants(),
+    fetchStyles(),
+    fetchSaints(),
+  ]);
 });
 
 // ===== Opsi dropdown =====
@@ -50,13 +76,13 @@ const saintOptions = computed(() =>
   saints.value.map((s) => ({ label: s.name, value: s.id }))
 );
 
-// ===== State form header =====
-const clientId = ref<number | null>(null);
-const deadline = ref("");
-const notes = ref("");
-const photoUrls = ref<string[]>([]);
+// ===== Tipe data form =====
+interface ItemMaterialRow {
+  materialComponentVariantId: number | null;
+  quantity: number | null;
+  remark: string;
+}
 
-// ===== State items (array baris) =====
 interface ItemRow {
   saintId: number | null;
   sizeId: number | null;
@@ -64,6 +90,7 @@ interface ItemRow {
   styleId: number | null;
   price: number | null;
   notes: string;
+  materials: ItemMaterialRow[];
 }
 
 function emptyRow(): ItemRow {
@@ -74,9 +101,17 @@ function emptyRow(): ItemRow {
     styleId: null,
     price: null,
     notes: "",
+    materials: [],
   };
 }
 
+// ===== State form header =====
+const clientId = ref<number | null>(null);
+const deadline = ref("");
+const notes = ref("");
+const photoUrls = ref<string[]>([]);
+
+// ===== State item-item pesanan =====
 const itemRows = ref<ItemRow[]>([emptyRow()]);
 
 function addRow() {
@@ -88,9 +123,92 @@ function removeRow(index: number) {
   itemRows.value.splice(index, 1);
 }
 
-const totalPrice = computed(() =>
-  itemRows.value.reduce((sum, row) => sum + (row.price ?? 0), 0)
+// ===== State modal tambah komponen bahan =====
+const showMaterialModal = ref(false);
+const activeItemIndex = ref<number | null>(null);
+const selectedMaterialVariantId = ref<number | null>(null);
+const materialQuantity = ref<number | null>(null);
+const materialRemark = ref("");
+
+const selectedVariant = computed(() =>
+  materialVariants.value.find(
+    (item) => item.id === selectedMaterialVariantId.value
+  )
 );
+
+const estimatedMaterialCost = computed(() => {
+  if (!selectedVariant.value || !materialQuantity.value) return 0;
+  return selectedVariant.value.unit_price * materialQuantity.value;
+});
+
+function openMaterialModal(index: number) {
+  activeItemIndex.value = index;
+  selectedMaterialVariantId.value = null;
+  materialQuantity.value = null;
+  materialRemark.value = "";
+  showMaterialModal.value = true;
+}
+
+function closeMaterialModal() {
+  activeItemIndex.value = null;
+  selectedMaterialVariantId.value = null;
+  materialQuantity.value = null;
+  materialRemark.value = "";
+  showMaterialModal.value = false;
+}
+
+function addMaterialToItem() {
+  if (activeItemIndex.value === null) return;
+
+  if (
+    !selectedMaterialVariantId.value ||
+    !materialQuantity.value ||
+    materialQuantity.value <= 0
+  ) {
+    toast.error("Komponen bahan dan quantity wajib diisi");
+    return;
+  }
+
+  itemRows.value[activeItemIndex.value].materials.push({
+    materialComponentVariantId: selectedMaterialVariantId.value,
+    quantity: materialQuantity.value,
+    remark: materialRemark.value,
+  });
+
+  closeMaterialModal();
+}
+
+// ===== Format helper =====
+function formatRupiah(value: number) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function formatVariantLabel(variant: MaterialComponentVariant) {
+  const componentName = variant.material_component?.name ?? "Unknown";
+
+  const dimensions = [variant.length, variant.width, variant.thickness]
+    .filter((value) => value > 0)
+    .join(" × ");
+
+  const specification =
+    dimensions !== ""
+      ? `${dimensions} cm`
+      : variant.specification || variant.unit;
+
+  return `${componentName} — ${specification} — ${formatRupiah(
+    variant.unit_price
+  )}/${variant.unit}`;
+}
+
+function formatMaterialLabel(variantId: number | null) {
+  const variant = materialVariants.value.find((item) => item.id === variantId);
+  if (!variant) return "Komponen tidak ditemukan";
+  return formatVariantLabel(variant);
+}
 
 // ===== Validasi & Submit =====
 const errors = ref<Record<string, string>>({});
@@ -116,6 +234,15 @@ function validate(): boolean {
   return Object.keys(errors.value).length === 0;
 }
 
+function resetForm() {
+  clientId.value = null;
+  deadline.value = "";
+  notes.value = "";
+  photoUrls.value = [];
+  itemRows.value = [emptyRow()];
+  errors.value = {};
+}
+
 async function handleSubmit() {
   if (!validate()) {
     toast.error("Mohon lengkapi semua field yang wajib diisi");
@@ -129,6 +256,8 @@ async function handleSubmit() {
       deadline: deadline.value,
       notes: notes.value,
       photo_urls: photoUrls.value,
+      discount_type: discountType.value || undefined,
+      discount_value: discountValue.value || 0,
       items: itemRows.value.map((row) => ({
         saint_id: row.saintId,
         size_id: row.sizeId,
@@ -136,8 +265,14 @@ async function handleSubmit() {
         style_id: row.styleId,
         price: row.price,
         notes: row.notes,
+        materials: row.materials.map((material) => ({
+          material_component_variant_id: material.materialComponentVariantId,
+          quantity: material.quantity,
+          remark: material.remark,
+        })),
       })),
     });
+
     toast.success("Pemesanan baru berhasil dibuat");
     resetForm();
     router.push("/transaction/commissions");
@@ -148,14 +283,23 @@ async function handleSubmit() {
   }
 }
 
-function resetForm() {
-  clientId.value = null;
-  deadline.value = "";
-  notes.value = "";
-  photoUrls.value = [];
-  itemRows.value = [emptyRow()];
-  errors.value = {};
-}
+const discountType = ref<"" | "percent" | "fixed">("");
+const discountValue = ref<number | null>(null);
+
+const subtotal = computed(() =>
+  itemRows.value.reduce((sum, row) => sum + (row.price ?? 0), 0)
+);
+
+const discountAmount = computed(() => {
+  if (!discountType.value || !discountValue.value) return 0;
+  if (discountType.value === "percent")
+    return subtotal.value * (discountValue.value / 100);
+  return discountValue.value;
+});
+
+const totalPrice = computed(() =>
+  Math.max(subtotal.value - discountAmount.value, 0)
+);
 </script>
 
 <template>
@@ -288,6 +432,62 @@ function resetForm() {
                   label="Catatan Item"
                   placeholder="Detail khusus untuk item ini" />
               </div>
+
+              <!-- Komponen Bahan -->
+              <div class="col-span-12">
+                <div
+                  class="border border-[#E5D9BF] rounded-lg p-4 bg-[#FBF8F1]">
+                  <div class="flex items-center justify-between mb-3">
+                    <div>
+                      <p class="text-sm font-semibold text-[#3A2E1F]">
+                        Komponen Bahan
+                      </p>
+                      <p class="text-xs text-[#8A7A5C] mt-1">
+                        Bahan yang digunakan untuk item ini
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      @click="openMaterialModal(index)"
+                      class="flex items-center gap-2 px-3 py-1.5 text-sm text-[#7A1F2B] border border-[#7A1F2B]/30 rounded-lg hover:bg-[#7A1F2B]/5 transition">
+                      <Plus :size="14" />
+                      Tambah Bahan
+                    </button>
+                  </div>
+
+                  <div
+                    v-if="row.materials.length === 0"
+                    class="text-xs text-[#8A7A5C]">
+                    Belum ada komponen bahan.
+                  </div>
+
+                  <div v-else class="space-y-2">
+                    <div
+                      v-for="(material, materialIndex) in row.materials"
+                      :key="materialIndex"
+                      class="flex items-center justify-between bg-white border border-[#E5D9BF] rounded-lg px-3 py-2">
+                      <div>
+                        <p class="text-sm text-[#3A2E1F]">
+                          {{
+                            formatMaterialLabel(
+                              material.materialComponentVariantId
+                            )
+                          }}
+                        </p>
+                        <p class="text-xs text-[#8A7A5C]">
+                          Qty: {{ material.quantity }}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        @click="row.materials.splice(materialIndex, 1)"
+                        class="text-[#B23A32] hover:bg-[#B23A32]/10 w-7 h-7 rounded-lg flex items-center justify-center">
+                        <Trash2 :size="14" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <p
@@ -299,11 +499,49 @@ function resetForm() {
         </div>
 
         <div class="flex justify-end mt-4 pt-4 border-t border-[#E5D9BF]">
-          <div class="text-right">
-            <p class="text-xs text-[#8A7A5C]">Total Harga</p>
-            <p class="text-lg font-semibold text-[#3A2E1F]">
-              Rp {{ totalPrice.toLocaleString("id-ID") }}
-            </p>
+          <div class="w-full max-w-xs space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-[#6B5D45] mb-1.5"
+                  >Tipe Diskon</label
+                >
+                <select
+                  v-model="discountType"
+                  class="w-full px-3 py-2 border border-[#D9CBB0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A24B]/40">
+                  <option value="">Tanpa Diskon</option>
+                  <option value="percent">Persen (%)</option>
+                  <option value="fixed">Nominal (Rp)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-[#6B5D45] mb-1.5"
+                  >Nilai Diskon</label
+                >
+                <input
+                  v-model.number="discountValue"
+                  type="number"
+                  :disabled="!discountType"
+                  class="w-full px-3 py-2 border border-[#D9CBB0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A24B]/40 disabled:bg-[#F5EFE3]" />
+              </div>
+            </div>
+
+            <div class="space-y-1 pt-2 border-t border-[#E5D9BF] text-sm">
+              <div class="flex justify-between text-[#6B5D45]">
+                <span>Subtotal</span>
+                <span>Rp {{ subtotal.toLocaleString("id-ID") }}</span>
+              </div>
+              <div
+                v-if="discountAmount > 0"
+                class="flex justify-between text-[#B23A32]">
+                <span>Diskon</span>
+                <span>- Rp {{ discountAmount.toLocaleString("id-ID") }}</span>
+              </div>
+              <div
+                class="flex justify-between text-base font-semibold text-[#3A2E1F] pt-1">
+                <span>Total</span>
+                <span>Rp {{ totalPrice.toLocaleString("id-ID") }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -324,4 +562,60 @@ function resetForm() {
       </div>
     </form>
   </AppLayout>
+
+  <ChildModalWrapper
+    :visible="showMaterialModal"
+    header-title="Tambah Komponen Bahan"
+    width-class="w-full max-w-md"
+    @hide="closeMaterialModal">
+    <div class="space-y-4">
+      <SearchableSelect
+        v-model="selectedMaterialVariantId"
+        label="Komponen Bahan"
+        placeholder="Pilih komponen bahan"
+        :options="
+          materialVariants.map((variant) => ({
+            label: formatVariantLabel(variant),
+            value: variant.id,
+          }))
+        " />
+
+      <div v-if="selectedVariant">
+        <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
+          Harga Satuan
+        </label>
+        <div
+          class="w-full px-4 py-2.5 bg-[#F5EFE3] border border-[#E5D9BF] rounded-lg text-sm text-[#3A2E1F]">
+          {{ formatRupiah(selectedVariant.unit_price) }}
+          / {{ selectedVariant.unit }}
+        </div>
+      </div>
+
+      <InputNumber
+        v-model="materialQuantity"
+        label="Quantity"
+        :max-fraction-digits="3" />
+
+      <InputText
+        v-model="materialRemark"
+        label="Catatan"
+        placeholder="Catatan penggunaan bahan" />
+
+      <div
+        v-if="selectedVariant && materialQuantity"
+        class="bg-[#7A1F2B]/5 border border-[#7A1F2B]/10 rounded-lg p-4">
+        <p class="text-xs text-[#8A7A5C]">Estimasi Material Cost</p>
+        <p class="text-lg font-semibold text-[#7A1F2B] mt-1">
+          Rp {{ estimatedMaterialCost.toLocaleString("id-ID") }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        @click="addMaterialToItem"
+        class="w-full py-2.5 bg-[#7A1F2B] text-white rounded-lg font-medium hover:bg-[#5F1621] transition">
+        Tambahkan
+      </button>
+    </div>
+  </ChildModalWrapper>
 </template>

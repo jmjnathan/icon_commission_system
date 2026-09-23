@@ -1,7 +1,6 @@
 <!-- components/input-text/input-password-component.vue -->
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { debounce } from "lodash-es";
 
 const props = withDefaults(
   defineProps<{
@@ -33,10 +32,6 @@ const emit = defineEmits<{
 const tempValue = ref(props.modelValue);
 const isVisible = ref(false);
 
-const debouncedEmit = debounce((val: string) => {
-  emit("update:modelValue", val);
-}, props.debounceMs);
-
 watch(
   () => props.modelValue,
   (val) => {
@@ -47,12 +42,9 @@ watch(
 function handleInput(e: Event) {
   const target = e.target as HTMLInputElement;
   const val = target.value;
-  tempValue.value = val;
-  debouncedEmit(val);
-}
 
-function handleBlur() {
-  debouncedEmit.flush();
+  tempValue.value = val;
+  emit("update:modelValue", val);
 }
 
 function toggleVisibility() {
@@ -77,7 +69,6 @@ function toggleVisibility() {
         :readonly="readOnly"
         :maxlength="maxLength"
         @input="handleInput"
-        @blur="handleBlur"
         class="w-full px-4 py-2.5 pr-11 bg-white border rounded-lg text-sm text-[#3A2E1F] placeholder-[#B0A588] focus:outline-none focus:ring-2 transition disabled:bg-[#F5EFE3] disabled:cursor-not-allowed"
         :class="
           errorMessage

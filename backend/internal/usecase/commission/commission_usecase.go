@@ -15,6 +15,7 @@ type CommissionUsecase interface {
 	Update(id uint, req dto.CommissionRequest, username string) (*entity.Commission, error)
 	UpdateStatus(id uint, req dto.CommissionStatusRequest, username string) (*entity.Commission, error)
 	Delete(id uint) error
+	AddPayment(commissionID uint, req dto.CommissionPaymentRequest, username string) (*entity.Commission, error)
 }
 
 type commissionUsecase struct {
@@ -54,23 +55,37 @@ func (u *commissionUsecase) Create(req dto.CommissionRequest, username string) (
 		return nil, err
 	}
 
-	items, total := buildItems(req.Items)
+	items, subtotal := buildItems(req.Items)
+
+	var discountAmount float64
+	if req.DiscountType == "percent" {
+		discountAmount = subtotal * (req.DiscountValue / 100)
+	} else if req.DiscountType == "fixed" {
+		discountAmount = req.DiscountValue
+	}
+	totalPrice := subtotal - discountAmount
+	if totalPrice < 0 {
+		totalPrice = 0
+	}
 
 	var photos []entity.CommissionPhoto
 	for _, url := range req.PhotoUrls {
 		photos = append(photos, entity.CommissionPhoto{FileURL: url})
 	}
 
-
 	newCommission := &entity.Commission{
-		ClientID:   req.ClientID,
-		OrderDate:  time.Now(),
-		Deadline:   deadline,
-		Notes:      req.Notes,
-		Status:     "pending",
-		TotalPrice: total,
-		Items:      items,
-		Photos: photos,
+		ClientID:      req.ClientID,
+		OrderDate:     time.Now(),
+		Deadline:      deadline,
+		Notes:         req.Notes,
+		Status:        "pending",
+		Subtotal:      subtotal,
+		DiscountType:  req.DiscountType,
+		DiscountValue: req.DiscountValue,
+		TotalPrice:    totalPrice,
+		PaymentStatus: "unpaid",
+		Items:         items,
+		Photos:        photos,
 		BaseModel: shared.BaseModel{
 			Status:          "Active",
 			CreatedUsername: username,
@@ -85,6 +100,42 @@ func (u *commissionUsecase) Create(req dto.CommissionRequest, username string) (
 	return u.repo.FindByID(newCommission.ID)
 }
 
+func (u *commissionUsecase) AddPayment(commissionID uint, req dto.CommissionPaymentRequest, username string) (*entity.Commission, error) {
+	commission, err := u.repo.FindByID(commissionID)
+	if err != nil {
+		return nil, err
+	}
+
+	payment := entity.CommissionPayment{
+		CommissionID:    commissionID,
+		Amount:          req.Amount,
+		PaymentType:     req.PaymentType,
+		Method:          req.Method,
+		PaidAt:          time.Now(),
+		Notes:           req.Notes,
+		CreatedUsername: username,
+	}
+
+	if err := u.repo.CreatePayment(&payment); err != nil {
+		return nil, err
+	}
+
+	// Hitung total sudah dibayar, update payment_status
+	totalPaid := 0.0
+	for _, p := range commission.Payments {
+		totalPaid += p.Amount
+	}
+	totalPaid += req.Amount 
+
+	if totalPaid >= commission.TotalPrice {
+		commission.PaymentStatus = "paid"
+	} else if totalPaid > 0 {
+		commission.PaymentStatus = "partial"
+	}
+	u.repo.Update(commission)
+
+	return u.repo.FindByID(commissionID)
+}
 func (u *commissionUsecase) Update(id uint, req dto.CommissionRequest, username string) (*entity.Commission, error) {
 	existing, err := u.repo.FindByID(id)
 	if err != nil {

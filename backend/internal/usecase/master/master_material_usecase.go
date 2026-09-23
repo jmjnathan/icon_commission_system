@@ -4,8 +4,8 @@ import (
 	"time"
 
 	dto "github.com/nathanchristiawan02/icon-commission-system-backend/internal/dto/master"
+	adminsistrator "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/admin"
 	entity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/master"
-	adminsistrator"github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/admin"
 	repository "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/master"
 )
 

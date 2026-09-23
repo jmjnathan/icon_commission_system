@@ -11,6 +11,7 @@ type CommissionRepository interface {
 	Create(commission *entity.Commission) error
 	Update(commission *entity.Commission) error
 	Delete(id uint) error
+	CreatePayment(payment *entity.CommissionPayment) error
 }
 
 type commissionRepository struct {
@@ -29,7 +30,8 @@ func (r *commissionRepository) preloadAll(db *gorm.DB) *gorm.DB {
 		Preload("Items.Size").
 		Preload("Items.Material").
 		Preload("Items.Style").
-		Preload("Photos")
+		Preload("Photos").
+		Preload("Payments")
 }
 
 func (r *commissionRepository) FindAll() ([]entity.Commission, error) {
@@ -54,11 +56,13 @@ func (r *commissionRepository) Create(commission *entity.Commission) error {
 func (r *commissionRepository) Update(commission *entity.Commission) error {
 	return r.db.Session(&gorm.Session{FullSaveAssociations: false}).Save(commission).Error
 }
-
 func (r *commissionRepository) Delete(id uint) error {
-	// Hapus item dulu (child), baru header (parent)
 	if err := r.db.Where("commission_id = ?", id).Delete(&entity.CommissionItem{}).Error; err != nil {
 		return err
 	}
 	return r.db.Delete(&entity.Commission{}, id).Error
+}
+
+func (r *commissionRepository) CreatePayment(payment *entity.CommissionPayment) error {
+	return r.db.Create(payment).Error
 }

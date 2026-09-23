@@ -26,7 +26,6 @@ async function handleSubmit() {
     validationError.value = "Password wajib diisi";
     return;
   }
-
   await login(username.value, password.value);
 }
 </script>
@@ -47,7 +46,7 @@ async function handleSubmit() {
         <p class="italic text-[#8A7A5C] mt-1">Sub Tutela Matris</p>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <div class="space-y-4">
         <InputTextComponent
           label="Username"
           v-model="username"
@@ -67,12 +66,13 @@ async function handleSubmit() {
         </p>
 
         <button
-          type="submit"
+          type="button"
+          @click="handleSubmit"
           :disabled="isLoading"
-          class="w-full py-2.5 bg-[#7A1F2B] text-[#F5EFE3] rounded-lg font-medium hover:bg-[#5F1621] transition disabled:opacity-50">
+          class="w-full py-2.5 bg-[#7A1F2B] text-[#F5EFE3] rounded-lg font-medium">
           {{ isLoading ? "Memproses..." : "Masuk" }}
         </button>
-      </form>
+      </div>
     </div>
   </div>
 </template>

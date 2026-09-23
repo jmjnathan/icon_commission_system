@@ -10,11 +10,20 @@ type CommissionItemRequest struct {
 }
 
 type CommissionRequest struct {
-	ClientID  uint                    `json:"client_id" binding:"required"`
-	Deadline  string                  `json:"deadline" binding:"required"`
-	Notes     string                  `json:"notes"`
-	Items     []CommissionItemRequest `json:"items" binding:"required,min=1,dive"`
-	PhotoUrls []string                `json:"photo_urls"`
+	ClientID      uint                    `json:"client_id" binding:"required"`
+	Deadline      string                  `json:"deadline" binding:"required"`
+	Notes         string                  `json:"notes"`
+	Items         []CommissionItemRequest `json:"items" binding:"required,min=1,dive"`
+	PhotoUrls     []string                `json:"photo_urls"`
+	DiscountType  string                  `json:"discount_type"`  // opsional: "percent" / "fixed"
+	DiscountValue float64                 `json:"discount_value"` // opsional
+}
+
+type CommissionPaymentRequest struct {
+	Amount      float64 `json:"amount" binding:"required"`
+	PaymentType string  `json:"payment_type" binding:"required"` // dp, cicilan, pelunasan
+	Method      string  `json:"method" binding:"required"`
+	Notes       string  `json:"notes"`
 }
 
 type CommissionStatusRequest struct {

@@ -5,8 +5,8 @@ import (
 )
 
 type MasterMaterial struct {
-	ID   uint   `gorm:"primaryKey" json:"id"`
-	Name string `json:"name"`
+	ID     uint   `gorm:"primaryKey" json:"id"`
+	Name   string `json:"name"`
 	Remark string `json:"remark"`
 	adminsistrator.BaseModel
 }

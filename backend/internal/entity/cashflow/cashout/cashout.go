@@ -12,7 +12,7 @@ type CashOut struct {
 	Description   string    `json:"description"`
 	Qty           float64   `json:"qty"`
 	UnitPrice     float64   `json:"unit_price"`
-	Amount        float64   `json:"amount"` 
+	Amount        float64   `json:"amount"`
 	Vendor        string    `json:"vendor"`
 	PaymentMethod string    `json:"payment_method"`
 	ReceiptURL    string    `json:"receipt_url"`

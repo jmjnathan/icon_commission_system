@@ -90,3 +90,20 @@ func (h *CommissionHandler) Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Berhasil dihapus"})
 }
+// handler
+func (h *CommissionHandler) AddPayment(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var req dto.CommissionPaymentRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	username := c.MustGet("username").(string)
+
+	result, err := h.usecase.AddPayment(uint(id), req, username)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": result})
+}
