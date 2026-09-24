@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-
 import { useRoute, useRouter } from "vue-router";
-
 import { ArrowLeft, Plus, Pencil, Trash2, Search } from "lucide-vue-next";
-
 import SidebarAppLayout from "../../../components/layout/sidebar-app-layout.vue";
 import ChildModalWrapper from "../../../components/modal/child-modal-wrapper.vue";
 import InputTextComponent from "../../../components/input-text/input-text-component.vue";
@@ -530,7 +527,6 @@ function formatCurrency(value: number) {
   <SidebarAppLayout>
     <div class="bg-white border border-[#E5D9BF] rounded-xl p-6 mb-6">
       <!-- PAGE HEADER -->
-
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
           <button
@@ -552,10 +548,8 @@ function formatCurrency(value: number) {
         </div>
 
         <!-- ACTION -->
-
         <div class="flex items-center gap-2">
           <!-- NEW -->
-
           <template v-if="!isEditMode">
             <button
               type="button"
@@ -567,7 +561,6 @@ function formatCurrency(value: number) {
           </template>
 
           <!-- DRAFT -->
-
           <template v-else-if="!isComplete">
             <button
               type="button"
@@ -595,7 +588,6 @@ function formatCurrency(value: number) {
           </template>
 
           <!-- COMPLETE -->
-
           <template v-else>
             <span
               class="px-3 py-2 rounded-lg bg-[#4C8C5B]/10 text-[#4C8C5B] text-sm font-semibold">
@@ -611,7 +603,6 @@ function formatCurrency(value: number) {
 
       <template v-else>
         <!-- HEADER SECTION -->
-
         <div class="p-5 mb-6">
           <div class="mb-5">
             <h2 class="text-base font-semibold text-[#3A2E1F]">Detail</h2>
@@ -623,7 +614,6 @@ function formatCurrency(value: number) {
 
           <div class="grid grid-cols-12 gap-6">
             <!-- DOCUMENT NO -->
-
             <div class="col-span-4">
               <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
                 No. Dokumen
@@ -636,7 +626,6 @@ function formatCurrency(value: number) {
             </div>
 
             <!-- DATE -->
-
             <div class="col-span-4">
               <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
                 Tanggal Dokumen
@@ -650,7 +639,6 @@ function formatCurrency(value: number) {
             </div>
 
             <!-- VENDOR -->
-
             <div class="col-span-4">
               <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
                 Vendor
@@ -663,7 +651,6 @@ function formatCurrency(value: number) {
             </div>
 
             <!-- REMARK -->
-
             <div class="col-span-12">
               <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
                 Remark
@@ -680,7 +667,6 @@ function formatCurrency(value: number) {
         </div>
 
         <!-- ITEM SECTION -->
-
         <div class="p-5">
           <div class="flex items-center justify-between mb-5">
             <div>
@@ -697,39 +683,82 @@ function formatCurrency(value: number) {
               @click="openAddItemModal"
               class="flex items-center gap-2 px-3 py-2 bg-[#7A1F2B] text-white text-sm font-medium rounded-lg hover:bg-[#5F1621] transition">
               <Plus :size="16" />
-
               Tambah Item
             </button>
           </div>
 
           <!-- TABLE -->
-
           <div class="overflow-x-auto border border-[#E5D9BF] rounded-lg">
-            <table class="w-full text-sm">
+            <table class="w-full table-fixed text-sm">
+              <!-- COLUMN WIDTH -->
+              <colgroup v-if="!isComplete">
+                <!-- Aksi -->
+                <col class="w-[8%]" />
+
+                <!-- Product -->
+                <col class="w-[32%]" />
+
+                <!-- Brand -->
+                <col class="w-[18%]" />
+
+                <!-- Qty -->
+                <col class="w-[10%]" />
+
+                <!-- Unit Price -->
+                <col class="w-[16%]" />
+
+                <!-- Subtotal -->
+                <col class="w-[16%]" />
+              </colgroup>
+
+              <colgroup v-else>
+                <!-- Product -->
+                <col class="w-[32%]" />
+
+                <!-- Brand -->
+                <col class="w-[18%]" />
+
+                <!-- Qty -->
+                <col class="w-[10%]" />
+
+                <!-- Unit Price -->
+                <col class="w-[20%]" />
+
+                <!-- Subtotal -->
+                <col class="w-[20%]" />
+              </colgroup>
+
               <thead class="bg-[#F8F4EC] border-b border-[#E5D9BF]">
                 <tr>
+                  <!-- AKSI -->
                   <th
                     v-if="!isComplete"
-                    class="px-4 py-3 text-center font-semibold text-[#6B5D45]">
+                    class="px-4 py-2 text-center font-semibold text-[#6B5D45]">
                     Aksi
                   </th>
-                  <th class="px-4 py-3 text-left font-semibold text-[#6B5D45]">
+
+                  <!-- PRODUCT -->
+                  <th class="px-4 py-2 text-left font-semibold text-[#6B5D45]">
                     Product
                   </th>
 
-                  <th class="px-4 py-3 text-left font-semibold text-[#6B5D45]">
+                  <!-- BRAND -->
+                  <th class="px-4 py-2 text-left font-semibold text-[#6B5D45]">
                     Brand
                   </th>
 
-                  <th class="px-4 py-3 text-right font-semibold text-[#6B5D45]">
+                  <!-- QTY -->
+                  <th class="px-4 py-2 text-right font-semibold text-[#6B5D45]">
                     Qty
                   </th>
 
-                  <th class="px-4 py-3 text-right font-semibold text-[#6B5D45]">
+                  <!-- UNIT PRICE -->
+                  <th class="px-4 py-2 text-right font-semibold text-[#6B5D45]">
                     Unit Price
                   </th>
 
-                  <th class="px-4 py-3 text-right font-semibold text-[#6B5D45]">
+                  <!-- SUBTOTAL -->
+                  <th class="px-4 py-2 text-right font-semibold text-[#6B5D45]">
                     Subtotal
                   </th>
                 </tr>
@@ -740,32 +769,38 @@ function formatCurrency(value: number) {
                   v-for="item in items"
                   :key="item.id"
                   class="border-b border-[#EEE5D5] last:border-b-0">
+                  <!-- AKSI -->
                   <td v-if="!isComplete" class="px-4 py-3 text-center">
                     <OverlayMenu :items="buildItemMenu(item)" />
                   </td>
-                  <td class="px-4 py-3 text-[#3A2E1F]">
+
+                  <!-- PRODUCT -->
+                  <td class="px-4 py-2 text-[#3A2E1F]">
                     {{ item.product_name }}
                   </td>
 
-                  <td class="px-4 py-3 text-[#6B5D45]">
+                  <!-- BRAND -->
+                  <td class="px-4 py-2 text-[#6B5D45]">
                     {{ item.brand || "-" }}
                   </td>
 
-                  <td class="px-4 py-3 text-right text-[#3A2E1F]">
+                  <!-- QTY -->
+                  <td class="px-4 py-2 text-right text-[#3A2E1F]">
                     {{ item.quantity }}
                   </td>
 
-                  <td class="px-4 py-3 text-right text-[#3A2E1F]">
+                  <!-- UNIT PRICE -->
+                  <td class="px-4 py-2 text-right text-[#3A2E1F]">
                     {{ formatCurrency(item.unit_price) }}
                   </td>
 
-                  <td class="px-4 py-3 text-right font-medium text-[#3A2E1F]">
+                  <!-- SUBTOTAL -->
+                  <td class="px-4 py-2 text-right font-medium text-[#3A2E1F]">
                     {{ formatCurrency(item.subtotal) }}
                   </td>
                 </tr>
 
                 <!-- EMPTY -->
-
                 <tr v-if="items.length === 0">
                   <td
                     :colspan="isComplete ? 5 : 6"
@@ -776,16 +811,15 @@ function formatCurrency(value: number) {
               </tbody>
 
               <!-- TOTAL -->
-
               <tfoot>
                 <tr class="bg-[#F8F4EC]">
                   <td
-                    colspan="5"
-                    class="px-4 py-4 text-right font-semibold text-[#6B5D45]">
+                    :colspan="isComplete ? 4 : 5"
+                    class="px-4 py-3 text-right font-semibold text-[#6B5D45]">
                     Total
                   </td>
 
-                  <td class="px-4 py-4 text-right font-bold text-[#3A2E1F]">
+                  <td class="px-4 py-3 text-right font-bold text-[#3A2E1F]">
                     {{ formatCurrency(total) }}
                   </td>
                 </tr>
@@ -797,14 +831,12 @@ function formatCurrency(value: number) {
     </div>
 
     <!-- ITEM MODAL -->
-
     <ChildModalWrapper
       v-model:visible="showItemModal"
       :headerTitle="itemModalTitle"
       @hide="closeModal">
       <div class="space-y-5">
         <!-- ERROR -->
-
         <div
           v-if="itemError"
           class="px-4 py-3 bg-[#B23A32]/10 text-[#B23A32] rounded-lg text-sm">
@@ -812,7 +844,6 @@ function formatCurrency(value: number) {
         </div>
 
         <!-- PRODUCT -->
-
         <div class="relative">
           <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
             Product
@@ -832,7 +863,6 @@ function formatCurrency(value: number) {
           </div>
 
           <!-- PRODUCT OPTIONS -->
-
           <div
             v-if="productOptions.length > 0"
             class="absolute z-50 left-0 right-0 mt-1 bg-white border border-[#D9CBB0] rounded-lg shadow-lg overflow-hidden">
@@ -858,7 +888,6 @@ function formatCurrency(value: number) {
         </div>
 
         <!-- BRAND -->
-
         <div>
           <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
             Brand
@@ -870,7 +899,6 @@ function formatCurrency(value: number) {
         </div>
 
         <!-- QUANTITY -->
-
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
@@ -902,7 +930,6 @@ function formatCurrency(value: number) {
         </div>
 
         <!-- REMARK -->
-
         <div>
           <label class="block text-xs font-medium text-[#6B5D45] mb-1.5">
             Remark
@@ -916,7 +943,6 @@ function formatCurrency(value: number) {
         </div>
 
         <!-- BUTTON -->
-
         <div class="flex justify-end gap-3 pt-4">
           <button
             type="button"
