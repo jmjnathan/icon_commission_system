@@ -11,6 +11,7 @@ import HistoryTransactionView from "../views/history-transaction/history-transac
 import CashoutView from "../views/cashflow/cashout/cashout-view.vue";
 import FinancialReportView from "../views/cashflow/financial-report/financial-report-view.vue";
 import MaterialComponent from "../views/master/materialComponent/materialComponent.vue";
+import ProductView from "../views/master/product/product-view.vue";
 
 const routes = [
   {
@@ -40,6 +41,12 @@ const routes = [
     path: "/master/styles",
     name: "Style",
     component: StyleView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/master/product",
+    name: "Product",
+    component: ProductView,
     meta: { requiresAuth: true },
   },
   {

@@ -17,6 +17,7 @@ import {
   ChartAreaIcon,
   ShoppingCartIcon,
   HandIcon,
+  BoxesIcon,
 } from "lucide-vue-next";
 import logo from "../../assets/logo.png";
 import { Chart } from "chart.js";
@@ -73,6 +74,7 @@ const purchasingItem = [
 ];
 
 const masterItems = [
+  { name: "Product", path: "/master/product", icon: BoxesIcon },
   { name: "Ukuran", path: "/master/size", icon: Ruler },
   { name: "Bahan Media", path: "/master/material", icon: Package },
   { name: "Component", path: "/master/material-components", icon: Package },

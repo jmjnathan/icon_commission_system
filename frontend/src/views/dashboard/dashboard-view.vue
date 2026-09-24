@@ -458,7 +458,7 @@ function handleAddPayment(commission: any) {
   showPaymentModal.value = true;
 }
 
-console.log('comission', commissions)
+console.log("comission", commissions);
 </script>
 
 <template>
@@ -488,7 +488,7 @@ console.log('comission', commissions)
     <!-- Perhatian Khusus -->
     <NotificationComponent :items="urgentItems" />
 
-    <h2 class="text-md font-semibold text-[#3A2E1F] mt-4">
+    <h2 class="text-md font-semibold text-[#3A2E1F] mt-2">
       Monitoring Pemasukan
     </h2>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
@@ -505,8 +505,6 @@ console.log('comission', commissions)
           <div class="w-10 h-10 rounded-full bg-[#E5D9BF] shrink-0"></div>
         </div>
       </template>
-
-      <!-- Data asli -->
       <template v-else>
         <div
           v-for="stat in financeStats"
