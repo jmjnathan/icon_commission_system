@@ -1,17 +1,21 @@
 package purchase_order
 
 type CreatePurchaseOrderItemRequest struct {
-	ProductID   int      `json:"product_id" validate:"required"`
-	Quantity    float64  `json:"quantity" validate:"required,gt=0"`
-	UnitPrice   float64  `json:"unit_price" validate:"required,gte=0"`
-	Remark      *string  `json:"remark"`
+	ProductID 	int     `json:"product_id" validate:"required"`
+	ProductName string  `json:"product_name" validate:"required"`
+	Quantity  	float64 `json:"quantity" validate:"required,gt=0"`
+	UnitPrice 	float64 `json:"unit_price" validate:"required,gte=0"`
+	Brand     	*string `json:"brand"`
+	Remark    	*string `json:"remark"`
 }
 
 type UpdatePurchaseOrderItemRequest struct {
-	ProductID   int      `json:"product_id" validate:"required"`
-	Quantity    float64  `json:"quantity" validate:"required,gt=0"`
-	UnitPrice   float64  `json:"unit_price" validate:"required,gte=0"`
-	Remark      *string  `json:"remark"`
+	ProductID 	int     `json:"product_id" validate:"required"`
+	ProductName string  `json:"product_name" validate:"required"`
+	Quantity  	float64 `json:"quantity" validate:"required,gt=0"`
+	UnitPrice 	float64 `json:"unit_price" validate:"required,gte=0"`
+	Brand     	*string `json:"brand"`
+	Remark    	*string `json:"remark"`
 }
 
 type PurchaseOrderItemResponse struct {

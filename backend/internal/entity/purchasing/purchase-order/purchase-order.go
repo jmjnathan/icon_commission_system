@@ -14,7 +14,7 @@ type PurchaseOrder struct {
 	ID           int       `json:"id"`
 	DocumentName string    `json:"document_name"`
 	DocumentNo   string    `json:"document_no"`
-	VendorID     int       `json:"vendor_id"`
+	VendorName   string    `json:"vendor_name"`
 	OrderDate    time.Time `json:"order_date"`
 	Status       string    `json:"status"`
 	Remark       *string   `json:"remark"`

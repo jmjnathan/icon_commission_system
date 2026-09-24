@@ -12,6 +12,8 @@ import CashoutView from "../views/cashflow/cashout/cashout-view.vue";
 import FinancialReportView from "../views/cashflow/financial-report/financial-report-view.vue";
 import MaterialComponent from "../views/master/materialComponent/materialComponent.vue";
 import ProductView from "../views/master/product/product-view.vue";
+import PurchaseOrderView from "../views/purchasing/purchase-order/purchase-order.vue";
+import PurchaseOrderFormView from "../views/purchasing/purchase-order/purchase-order-form.vue";
 
 const routes = [
   {
@@ -90,6 +92,26 @@ const routes = [
     name: "MaterialComponent",
     component: MaterialComponent,
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/purchasing/purchase-order",
+    name: "PurchaseOrder",
+    component: PurchaseOrderView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/purchasing/purchase-order/form",
+    name: "PurchaseOrderForm",
+    component: PurchaseOrderFormView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/purchasing/purchase-order/form/:id",
+    name: "PurchaseOrderFormEdit",
+    component: PurchaseOrderFormView,
+    meta: {
+      requiresAuth: true,
+    },
   },
 ];
 

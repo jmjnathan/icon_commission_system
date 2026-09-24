@@ -55,7 +55,7 @@ const cashflowItem = [
 const inventoryItem = [
   {
     name: "Gudang",
-    path: "inventory/current-stock",
+    path: "/inventory/current-stock",
     icon: WarehouseIcon,
   },
 ];
@@ -63,12 +63,12 @@ const inventoryItem = [
 const purchasingItem = [
   {
     name: "Pemesanan Bahan Baku",
-    path: "purchasing/purchase-order",
+    path: "/purchasing/purchase-order",
     icon: ShoppingCartIcon,
   },
   {
     name: "Penerimaan Barang",
-    path: "purchasing/receive-goods",
+    path: "/purchasing/receive-goods",
     icon: HandIcon,
   },
 ];

@@ -91,7 +91,7 @@ func (r *purchaseOrderRepository) Update(
 			Updates(map[string]interface{}{
 				"document_name": po.DocumentName,
 				"document_no":   po.DocumentNo,
-				"vendor_id":     po.VendorID,
+				"vendor_name":    po.VendorName,
 				"order_date":    po.OrderDate,
 				"status":        po.Status,
 				"remark":        po.Remark,

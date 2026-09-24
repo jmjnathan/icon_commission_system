@@ -23,6 +23,10 @@ func NewPurchaseOrderUsecase(
 	}
 }
 
+// =========================
+// GET ALL
+// =========================
+
 func (u *purchaseOrderUsecase) GetAll(
 	ctx context.Context,
 ) ([]dto.PurchaseOrderResponse, error) {
@@ -35,11 +39,24 @@ func (u *purchaseOrderUsecase) GetAll(
 	responses := make([]dto.PurchaseOrderResponse, 0, len(purchaseOrders))
 
 	for _, po := range purchaseOrders {
-		responses = append(responses, mapPurchaseOrderResponse(po))
+
+		items, err := u.repository.FindItems(uint(po.ID))
+		if err != nil {
+			return nil, err
+		}
+
+		response := mapPurchaseOrderResponse(po)
+		response.Total = calculateTotal(items)
+
+		responses = append(responses, response)
 	}
 
 	return responses, nil
 }
+
+// =========================
+// GET BY ID
+// =========================
 
 func (u *purchaseOrderUsecase) GetByID(
 	ctx context.Context,
@@ -55,10 +72,20 @@ func (u *purchaseOrderUsecase) GetByID(
 		return nil, err
 	}
 
+	items, err := u.repository.FindItems(uint(id))
+	if err != nil {
+		return nil, err
+	}
+
 	response := mapPurchaseOrderResponse(*po)
+	response.Total = calculateTotal(items)
 
 	return &response, nil
 }
+
+// =========================
+// GET ITEMS
+// =========================
 
 func (u *purchaseOrderUsecase) GetItems(
 	ctx context.Context,
@@ -74,41 +101,59 @@ func (u *purchaseOrderUsecase) GetItems(
 		return nil, err
 	}
 
-	responses := make([]dto.PurchaseOrderItemResponse, 0, len(items))
+	responses := make(
+		[]dto.PurchaseOrderItemResponse,
+		0,
+		len(items),
+	)
 
 	for _, item := range items {
-		responses = append(responses, dto.PurchaseOrderItemResponse{
-			ID:              item.ID,
-			PurchaseOrderID: item.PurchaseOrderID,
-			ProductID:       item.ProductID,
-			ProductName:     item.ProductName,
-			Brand:           item.Brand,
-			Quantity:        item.Quantity,
-			UnitPrice:       item.UnitPrice,
-			Subtotal:        item.Subtotal,
-			Remark:          item.Remark,
-		})
+		responses = append(
+			responses,
+			dto.PurchaseOrderItemResponse{
+				ID:              item.ID,
+				PurchaseOrderID: item.PurchaseOrderID,
+				ProductID:       item.ProductID,
+				ProductName:     item.ProductName,
+				Brand:           item.Brand,
+				Quantity:        item.Quantity,
+				UnitPrice:       item.UnitPrice,
+				Subtotal:        item.Subtotal,
+				Remark:          item.Remark,
+			},
+		)
 	}
 
 	return responses, nil
 }
+
+// =========================
+// CREATE
+// =========================
 
 func (u *purchaseOrderUsecase) Create(
 	ctx context.Context,
 	req dto.CreatePurchaseOrderRequest,
 ) (*dto.PurchaseOrderResponse, error) {
 
-	if req.VendorID <= 0 {
-		return nil, errors.New("vendor_id is required")
+	if req.VendorName <= "" {
+		return nil, errors.New("vendor_name is required")
 	}
 
 	if len(req.Items) == 0 {
-		return nil, errors.New("purchase order must have at least one item")
+		return nil, errors.New(
+			"purchase order must have at least one item",
+		)
 	}
 
-	orderDate, err := time.Parse("2006-01-02", req.OrderDate)
+	orderDate, err := time.Parse(
+		"2006-01-02",
+		req.OrderDate,
+	)
 	if err != nil {
-		return nil, errors.New("invalid order_date format, use YYYY-MM-DD")
+		return nil, errors.New(
+			"invalid order_date format, use YYYY-MM-DD",
+		)
 	}
 
 	documentNo := req.DocumentNo
@@ -123,35 +168,50 @@ func (u *purchaseOrderUsecase) Create(
 	po := &entity.PurchaseOrder{
 		DocumentName: "Purchase Order",
 		DocumentNo:   documentNo,
-		VendorID:     req.VendorID,
+		VendorName:   req.VendorName,
 		OrderDate:    orderDate,
 		Status:       entity.StatusDraft,
 		Remark:       req.Remark,
 	}
 
-	items := make([]entity.PurchaseOrderItem, 0, len(req.Items))
+	items := make(
+		[]entity.PurchaseOrderItem,
+		0,
+		len(req.Items),
+	)
 
 	for _, item := range req.Items {
 
 		if item.ProductID <= 0 {
-			return nil, errors.New("product_id is required")
+			return nil, errors.New(
+				"product_id is required",
+			)
 		}
 
 		if item.Quantity <= 0 {
-			return nil, errors.New("quantity must be greater than 0")
+			return nil, errors.New(
+				"quantity must be greater than 0",
+			)
 		}
 
 		if item.UnitPrice < 0 {
-			return nil, errors.New("unit_price cannot be negative")
+			return nil, errors.New(
+				"unit_price cannot be negative",
+			)
 		}
 
-		items = append(items, entity.PurchaseOrderItem{
-			ProductID:  item.ProductID,
-			Quantity:   item.Quantity,
-			UnitPrice:  item.UnitPrice,
-			Subtotal:   item.Quantity * item.UnitPrice,
-			Remark:     item.Remark,
-		})
+		items = append(
+			items,
+			entity.PurchaseOrderItem{
+				ProductID:   item.ProductID,
+				ProductName: item.ProductName,
+				Brand:       item.Brand,
+				Quantity:    item.Quantity,
+				UnitPrice:   item.UnitPrice,
+				Subtotal:    item.Quantity * item.UnitPrice,
+				Remark:      item.Remark,
+			},
+		)
 	}
 
 	err = u.repository.Create(po, items)
@@ -159,10 +219,16 @@ func (u *purchaseOrderUsecase) Create(
 		return nil, err
 	}
 
+	// Hitung total berdasarkan item yang baru dibuat
 	response := mapPurchaseOrderResponse(*po)
+	response.Total = calculateTotal(items)
 
 	return &response, nil
 }
+
+// =========================
+// UPDATE
+// =========================
 
 func (u *purchaseOrderUsecase) Update(
 	ctx context.Context,
@@ -171,7 +237,9 @@ func (u *purchaseOrderUsecase) Update(
 ) (*dto.PurchaseOrderResponse, error) {
 
 	if id <= 0 {
-		return nil, errors.New("invalid purchase order id")
+		return nil, errors.New(
+			"invalid purchase order id",
+		)
 	}
 
 	existing, err := u.repository.FindByID(uint(id))
@@ -185,17 +253,26 @@ func (u *purchaseOrderUsecase) Update(
 		)
 	}
 
-	if req.VendorID <= 0 {
-		return nil, errors.New("vendor_id is required")
+	if req.VendorName <= "" {
+		return nil, errors.New(
+			"vendor_name is required",
+		)
 	}
 
 	if len(req.Items) == 0 {
-		return nil, errors.New("purchase order must have at least one item")
+		return nil, errors.New(
+			"purchase order must have at least one item",
+		)
 	}
 
-	orderDate, err := time.Parse("2006-01-02", req.OrderDate)
+	orderDate, err := time.Parse(
+		"2006-01-02",
+		req.OrderDate,
+	)
 	if err != nil {
-		return nil, errors.New("invalid order_date format, use YYYY-MM-DD")
+		return nil, errors.New(
+			"invalid order_date format, use YYYY-MM-DD",
+		)
 	}
 
 	documentNo := req.DocumentNo
@@ -205,33 +282,48 @@ func (u *purchaseOrderUsecase) Update(
 	}
 
 	existing.DocumentNo = documentNo
-	existing.VendorID = req.VendorID
+	existing.VendorName = req.VendorName
 	existing.OrderDate = orderDate
 	existing.Remark = req.Remark
 
-	items := make([]entity.PurchaseOrderItem, 0, len(req.Items))
+	items := make(
+		[]entity.PurchaseOrderItem,
+		0,
+		len(req.Items),
+	)
 
 	for _, item := range req.Items {
 
 		if item.ProductID <= 0 {
-			return nil, errors.New("product_id is required")
+			return nil, errors.New(
+				"product_id is required",
+			)
 		}
 
 		if item.Quantity <= 0 {
-			return nil, errors.New("quantity must be greater than 0")
+			return nil, errors.New(
+				"quantity must be greater than 0",
+			)
 		}
 
 		if item.UnitPrice < 0 {
-			return nil, errors.New("unit_price cannot be negative")
+			return nil, errors.New(
+				"unit_price cannot be negative",
+			)
 		}
 
-		items = append(items, entity.PurchaseOrderItem{
-			ProductID:  item.ProductID,
-			Quantity:   item.Quantity,
-			UnitPrice:  item.UnitPrice,
-			Subtotal:   item.Quantity * item.UnitPrice,
-			Remark:     item.Remark,
-		})
+		items = append(
+			items,
+			entity.PurchaseOrderItem{
+				ProductID:   item.ProductID,
+				ProductName: item.ProductName,
+				Brand:       item.Brand,
+				Quantity:    item.Quantity,
+				UnitPrice:   item.UnitPrice,
+				Subtotal:    item.Quantity * item.UnitPrice,
+				Remark:      item.Remark,
+			},
+		)
 	}
 
 	err = u.repository.Update(existing, items)
@@ -239,10 +331,17 @@ func (u *purchaseOrderUsecase) Update(
 		return nil, err
 	}
 
+	// Karena items sudah merupakan data terbaru,
+	// total bisa langsung dihitung dari items.
 	response := mapPurchaseOrderResponse(*existing)
+	response.Total = calculateTotal(items)
 
 	return &response, nil
 }
+
+// =========================
+// SUBMIT
+// =========================
 
 // Submit changes the Purchase Order status from draft to ordered.
 func (u *purchaseOrderUsecase) Submit(
@@ -251,7 +350,9 @@ func (u *purchaseOrderUsecase) Submit(
 ) error {
 
 	if id <= 0 {
-		return errors.New("invalid purchase order id")
+		return errors.New(
+			"invalid purchase order id",
+		)
 	}
 
 	purchaseOrder, err := u.repository.FindByID(uint(id))
@@ -277,13 +378,19 @@ func (u *purchaseOrderUsecase) Submit(
 	return nil
 }
 
+// =========================
+// DELETE
+// =========================
+
 func (u *purchaseOrderUsecase) Delete(
 	ctx context.Context,
 	id int,
 ) error {
 
 	if id <= 0 {
-		return errors.New("invalid purchase order id")
+		return errors.New(
+			"invalid purchase order id",
+		)
 	}
 
 	purchaseOrder, err := u.repository.FindByID(uint(id))
@@ -300,6 +407,27 @@ func (u *purchaseOrderUsecase) Delete(
 	return u.repository.Delete(uint(id))
 }
 
+// =========================
+// CALCULATE TOTAL
+// =========================
+
+func calculateTotal(
+	items []entity.PurchaseOrderItem,
+) float64 {
+
+	var total float64
+
+	for _, item := range items {
+		total += item.Subtotal
+	}
+
+	return total
+}
+
+// =========================
+// MAPPER
+// =========================
+
 func mapPurchaseOrderResponse(
 	po entity.PurchaseOrder,
 ) dto.PurchaseOrderResponse {
@@ -308,10 +436,10 @@ func mapPurchaseOrderResponse(
 		ID:           po.ID,
 		DocumentName: po.DocumentName,
 		DocumentNo:   po.DocumentNo,
-		VendorID:     po.VendorID,
+		VendorName:   po.VendorName,
 		OrderDate:    po.OrderDate.Format("2006-01-02"),
-		Status:        po.Status,
-		Remark:        po.Remark,
+		Status:       po.Status,
+		Remark:       po.Remark,
 		CreatedAt:    po.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:    po.UpdatedAt.Format(time.RFC3339),
 	}

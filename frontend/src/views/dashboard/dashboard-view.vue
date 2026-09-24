@@ -7,7 +7,6 @@ import {
   onBeforeUnmount,
   nextTick,
 } from "vue";
-import type { Commission } from "../../composables/commission/useCommission.ts";
 import AppLayout from "../../components/layout/sidebar-app-layout.vue";
 import { useCommission } from "../../composables/commission/useCommission.ts";
 import NotificationComponent from "../../components/notification/notification-component.vue";
@@ -280,100 +279,8 @@ function openDetailModal(item: any) {
   showDetailModal.value = true;
 }
 
-function closeDetailModal() {
-  showDetailModal.value = false;
-  selectedCommission.value = null;
-}
 const currentPage = ref(1);
 const perPage = ref(50);
-
-const calendarDate = ref(new Date());
-
-const calendarYear = computed(() => calendarDate.value.getFullYear());
-const calendarMonth = computed(() => calendarDate.value.getMonth());
-
-const monthNames = [
-  "Januari",
-  "Februari",
-  "Maret",
-  "April",
-  "Mei",
-  "Juni",
-  "Juli",
-  "Agustus",
-  "September",
-  "Oktober",
-  "November",
-  "Desember",
-];
-
-const calendarTitle = computed(
-  () => `${monthNames[calendarMonth.value]} ${calendarYear.value}`
-);
-
-function previousMonth() {
-  calendarDate.value = new Date(calendarYear.value, calendarMonth.value - 1, 1);
-}
-
-function nextMonth() {
-  calendarDate.value = new Date(calendarYear.value, calendarMonth.value + 1, 1);
-}
-
-function goToToday() {
-  calendarDate.value = new Date();
-}
-
-const calendarDays = computed(() => {
-  const year = calendarYear.value;
-  const month = calendarMonth.value;
-
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-
-  // Senin = 0, Minggu = 6
-  const startOffset = (firstDay.getDay() + 6) % 7;
-
-  const totalDays = lastDay.getDate();
-
-  const days = [];
-
-  for (let i = 0; i < startOffset; i++) {
-    days.push(null);
-  }
-
-  for (let day = 1; day <= totalDays; day++) {
-    days.push(new Date(year, month, day));
-  }
-
-  return days;
-});
-
-function isCommissionActiveOnDate(commission: Commission, date: Date) {
-  const orderDate = new Date(commission.order_date);
-  const deadline = new Date(commission.deadline);
-
-  const current = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-  const start = new Date(
-    orderDate.getFullYear(),
-    orderDate.getMonth(),
-    orderDate.getDate()
-  );
-
-  const end = new Date(
-    deadline.getFullYear(),
-    deadline.getMonth(),
-    deadline.getDate()
-  );
-
-  return current >= start && current <= end;
-}
-
-function getCommissionsForDate(date: Date) {
-  return commissions.value.filter((commission) =>
-    isCommissionActiveOnDate(commission, date)
-  );
-}
 
 const topSubjects = computed(() => {
   const counts: Record<string, number> = {};
@@ -594,7 +501,7 @@ console.log("comission", commissions);
           :is-loading="isLoading"
           empty-message="Tidak ada pesanan yang sedang berlangsung."
           row-key="id"
-          class="mb-2 min-w-[720px]">
+          class="mb-2 min-w-180">
           <template #aksi="{ item }">
             <div class="flex gap-2">
               <button
