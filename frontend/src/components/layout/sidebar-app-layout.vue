@@ -13,8 +13,13 @@ import {
   Ruler,
   PaintBucket,
   PersonStanding,
+  WarehouseIcon,
+  ChartAreaIcon,
+  ShoppingCartIcon,
+  HandIcon,
 } from "lucide-vue-next";
 import logo from "../../assets/logo.png";
+import { Chart } from "chart.js";
 
 const route = useRoute();
 const { logout } = useAuth();
@@ -43,6 +48,27 @@ const cashflowItem = [
     name: "Laporan Keuangan",
     path: "/cashflow/report",
     icon: BriefcaseBusiness,
+  },
+];
+
+const inventoryItem = [
+  {
+    name: "Gudang",
+    path: "inventory/current-stock",
+    icon: WarehouseIcon,
+  },
+];
+
+const purchasingItem = [
+  {
+    name: "Pemesanan Bahan Baku",
+    path: "purchasing/purchase-order",
+    icon: ShoppingCartIcon,
+  },
+  {
+    name: "Penerimaan Barang",
+    path: "purchasing/receive-goods",
+    icon: HandIcon,
   },
 ];
 
@@ -80,7 +106,7 @@ const masterItems = [
 
       <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         <p
-          class="px-3 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
+          class="px-3 mt-4 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
           Navigasi
         </p>
         <RouterLink
@@ -98,7 +124,7 @@ const masterItems = [
         </RouterLink>
 
         <p
-          class="px-3 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
+          class="px-3 mt-4 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
           Transaksi
         </p>
         <RouterLink
@@ -115,7 +141,7 @@ const masterItems = [
           {{ item.name }}
         </RouterLink>
         <p
-          class="px-3 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
+          class="px-3 mt-4 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
           Arus Kas
         </p>
         <RouterLink
@@ -133,10 +159,46 @@ const masterItems = [
         </RouterLink>
 
         <p
-          class="px-3 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mt-6 mb-2">
+          class="px-3 mt-4 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
+          Pengadaan Stock
+        </p>
+        <RouterLink
+          v-for="item in purchasingItem"
+          :key="item.path"
+          :to="item.path"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition"
+          :class="
+            route.path === item.path
+              ? 'bg-[#1E2E44] text-[#C9A24B] font-medium'
+              : 'text-[#B0A588] hover:bg-white/5 hover:text-[#D9CBB0]'
+          ">
+          <component :is="item.icon" :size="18" />
+          {{ item.name }}
+        </RouterLink>
+
+        <p
+          class="px-3 mt-4 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mb-2">
+          Gudang
+        </p>
+        <RouterLink
+          v-for="item in inventoryItem"
+          :key="item.path"
+          :to="item.path"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition"
+          :class="
+            route.path === item.path
+              ? 'bg-[#1E2E44] text-[#C9A24B] font-medium'
+              : 'text-[#B0A588] hover:bg-white/5 hover:text-[#D9CBB0]'
+          ">
+          <component :is="item.icon" :size="18" />
+          {{ item.name }}
+        </RouterLink>
+
+        <p
+          class="px-3 mt-4 text-xs text-[#8A7A5C] font-medium uppercase tracking-wider mt-6 mb-2">
           Master Data
         </p>
-        <div v-if="masterOpen" class=" space-y-1">
+        <div v-if="masterOpen" class="space-y-1">
           <RouterLink
             v-for="item in masterItems"
             :key="item.path"
@@ -153,7 +215,7 @@ const masterItems = [
         </div>
       </nav>
 
-      <div class="px-3 py-4 border-t border-white/10">
+      <div class="px-3 mt-4 py-4 border-t border-white/10">
         <button
           @click="logout"
           class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#B0A588] hover:bg-white/5 hover:text-[#D9CBB0] transition">

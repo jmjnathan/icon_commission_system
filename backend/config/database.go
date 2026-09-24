@@ -10,6 +10,7 @@ import (
 	client "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/client"
 	commissionEntity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/commission"
 	master "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/master"
+	purchaseOrderEntity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/purchasing/purchase-order"
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/migration"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -48,6 +49,8 @@ func ConnectDatabase() {
 		&commissionEntity.CommissionPhoto{},
 		&commissionEntity.CommissionPayment{},
 		&cashoutEntity.CashOut{},
+		&purchaseOrderEntity.PurchaseOrder{},
+		&purchaseOrderEntity.PurchaseOrderItem{},
 	)
 	if err != nil {
 		log.Fatal("Gagal migrate: ", err)

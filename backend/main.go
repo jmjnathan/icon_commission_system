@@ -35,6 +35,11 @@ import (
 	cashoutRepoPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/cashflow/cashout"
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/router/cashflow/cashout"
 	cashoutUsecasePkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/cashflow/cashout"
+
+	purchaseOrderHandlerPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/purchasing/purchase-order"
+	purchaseOrderRepoPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/purchasing/purchase-order"
+	purchaseOrderRouter "github.com/nathanchristiawan02/icon-commission-system-backend/internal/router/purchasing/purchase-order"
+	purchaseOrderUsecasePkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/purchasing/purchase-order"
 )
 
 func main() {
@@ -126,6 +131,20 @@ func main() {
 	cashOutUC := cashoutUsecasePkg.NewCashOutUsecase(cashOutRepository)
 	cashOutH := cashoutHandlerPkg.NewCashOutHandler(cashOutUC)
 
+	// Purchase Order
+	purchaseOrderRepository :=
+		purchaseOrderRepoPkg.NewPurchaseOrderRepository(config.DB)
+
+	purchaseOrderUC :=
+		purchaseOrderUsecasePkg.NewPurchaseOrderUsecase(
+			purchaseOrderRepository,
+		)
+
+	purchaseOrderH :=
+		purchaseOrderHandlerPkg.NewPurchaseOrderHandler(
+			purchaseOrderUC,
+		)
+
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
@@ -164,7 +183,13 @@ func main() {
 			commissionItemMaterialHandler,
 		)
 		cashout.RegisterCashOutRoutes(protected, cashOutH)
+		purchaseOrderRouter.RegisterPurchaseOrderRoutes(
+			protected,
+			purchaseOrderH,
+		)
+
 		protected.POST("/upload", uploadHandler.UploadFile)
+
 	}
 
 	r.Run(":8080")
