@@ -10,6 +10,7 @@ import (
 	client "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/client"
 	commissionEntity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/commission"
 	master "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/master"
+	productEntity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/master/product"
 	purchaseOrderEntity "github.com/nathanchristiawan02/icon-commission-system-backend/internal/entity/purchasing/purchase-order"
 	"github.com/nathanchristiawan02/icon-commission-system-backend/internal/migration"
 	"gorm.io/driver/postgres"
@@ -42,6 +43,8 @@ func ConnectDatabase() {
 		&master.MaterialComponentVariant{},
 		&master.MasterSaints{},
 		&master.MasterStyle{},
+		&productEntity.MasterProduct{},
+
 		&client.Client{},
 		&commissionEntity.Commission{},
 		&commissionEntity.CommissionItem{},

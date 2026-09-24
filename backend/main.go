@@ -26,6 +26,11 @@ import (
 	clientUsecase "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/client"
 	masterUsecase "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/master"
 
+	productHandlerPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/master/product"
+	productRepoPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/master/product"
+	productRouter "github.com/nathanchristiawan02/icon-commission-system-backend/internal/router/master/product"
+	productUsecasePkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/usecase/master/product"
+
 	commissionHandlerPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/commission"
 	uploadHandler "github.com/nathanchristiawan02/icon-commission-system-backend/internal/handler/upload"
 	commissionRepoPkg "github.com/nathanchristiawan02/icon-commission-system-backend/internal/repository/commission"
@@ -102,6 +107,16 @@ func main() {
 			materialComponentVariantUC,
 		)
 
+	productRepository := productRepoPkg.NewProductRepository(config.DB)
+
+	productUC := productUsecasePkg.NewProductUsecase(
+		productRepository,
+	)
+		
+	productH := productHandlerPkg.NewProductHandler(
+		productUC,
+	)
+
 	// Client
 	clientRepository := clientRepo.NewClientRepository(config.DB)
 	clientUC := clientUsecase.NewClientUsecase(clientRepository)
@@ -176,6 +191,11 @@ func main() {
 			protected,
 			materialComponentVariantH,
 		)
+		productRouter.RegisterProductRoutes(
+			protected,
+			productH,
+		)
+
 		transaction.RegisterClientRoutes(protected, clientH)
 		commission.RegisterCommissionRoutes(protected, commissionH)
 		commission.RegisterCommissionItemMaterialRoutes(
