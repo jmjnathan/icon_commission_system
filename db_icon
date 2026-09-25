@@ -1,0 +1,1627 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 16.4
+-- Dumped by pg_dump version 16.4
+
+-- Started on 2026-09-25 12:17:17 WIB
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 216 (class 1259 OID 16400)
+-- Name: admins; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.admins (
+    id bigint NOT NULL,
+    username text NOT NULL,
+    password text NOT NULL,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone
+);
+
+
+ALTER TABLE public.admins OWNER TO postgres;
+
+--
+-- TOC entry 215 (class 1259 OID 16399)
+-- Name: admins_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.admins_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.admins_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3781 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: admins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.admins_id_seq OWNED BY public.admins.id;
+
+
+--
+-- TOC entry 234 (class 1259 OID 16530)
+-- Name: cash_outs; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cash_outs (
+    id bigint NOT NULL,
+    category text,
+    description text,
+    amount numeric,
+    date timestamp with time zone,
+    status text DEFAULT 'Active'::text,
+    created_at timestamp with time zone,
+    created_username text,
+    updated_at timestamp with time zone,
+    updated_username text,
+    qty numeric,
+    unit_price numeric,
+    vendor text,
+    payment_method text,
+    receipt_url text,
+    notes text
+);
+
+
+ALTER TABLE public.cash_outs OWNER TO postgres;
+
+--
+-- TOC entry 233 (class 1259 OID 16529)
+-- Name: cash_outs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cash_outs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.cash_outs_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3782 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: cash_outs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cash_outs_id_seq OWNED BY public.cash_outs.id;
+
+
+--
+-- TOC entry 226 (class 1259 OID 16455)
+-- Name: clients; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.clients (
+    id bigint NOT NULL,
+    name text NOT NULL,
+    nickname text,
+    phone text NOT NULL,
+    alternate_phone text,
+    email text,
+    instagram_handle text,
+    address text,
+    city text,
+    province text,
+    postal_code text,
+    country text DEFAULT 'Indonesia'::text,
+    denomination text,
+    patron_saint_preference text,
+    parish_name text,
+    first_order_date timestamp with time zone,
+    total_orders bigint DEFAULT 0,
+    preferred_payment_method text,
+    notes text,
+    status text DEFAULT 'Active'::text,
+    created_at timestamp with time zone,
+    created_username text,
+    updated_at timestamp with time zone,
+    updated_username text
+);
+
+
+ALTER TABLE public.clients OWNER TO postgres;
+
+--
+-- TOC entry 225 (class 1259 OID 16454)
+-- Name: clients_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.clients_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.clients_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3783 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: clients_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.clients_id_seq OWNED BY public.clients.id;
+
+
+--
+-- TOC entry 240 (class 1259 OID 16566)
+-- Name: commission_item_materials; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.commission_item_materials (
+    id bigint NOT NULL,
+    commission_item_id bigint,
+    material_component_variant_id bigint,
+    quantity numeric,
+    unit_price numeric,
+    total_cost numeric,
+    remark text,
+    status text DEFAULT 'Active'::text,
+    created_at timestamp with time zone,
+    created_username text,
+    updated_at timestamp with time zone,
+    updated_username text
+);
+
+
+ALTER TABLE public.commission_item_materials OWNER TO postgres;
+
+--
+-- TOC entry 239 (class 1259 OID 16565)
+-- Name: commission_item_materials_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.commission_item_materials_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.commission_item_materials_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3784 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: commission_item_materials_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.commission_item_materials_id_seq OWNED BY public.commission_item_materials.id;
+
+
+--
+-- TOC entry 230 (class 1259 OID 16482)
+-- Name: commission_items; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.commission_items (
+    id bigint NOT NULL,
+    commission_id bigint,
+    saint_id bigint,
+    size_id bigint,
+    material_id bigint,
+    style_id bigint,
+    price numeric,
+    notes text,
+    material_component_variant_id bigint,
+    material_quantity numeric,
+    material_unit_price numeric,
+    material_cost numeric
+);
+
+
+ALTER TABLE public.commission_items OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1259 OID 16481)
+-- Name: commission_items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.commission_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.commission_items_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3785 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: commission_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.commission_items_id_seq OWNED BY public.commission_items.id;
+
+
+--
+-- TOC entry 242 (class 1259 OID 16582)
+-- Name: commission_payments; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.commission_payments (
+    id bigint NOT NULL,
+    commission_id bigint,
+    amount numeric,
+    payment_type text,
+    method text,
+    paid_at timestamp with time zone,
+    notes text,
+    created_username text
+);
+
+
+ALTER TABLE public.commission_payments OWNER TO postgres;
+
+--
+-- TOC entry 241 (class 1259 OID 16581)
+-- Name: commission_payments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.commission_payments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.commission_payments_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3786 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: commission_payments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.commission_payments_id_seq OWNED BY public.commission_payments.id;
+
+
+--
+-- TOC entry 232 (class 1259 OID 16516)
+-- Name: commission_photos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.commission_photos (
+    id bigint NOT NULL,
+    commission_id bigint,
+    file_url text
+);
+
+
+ALTER TABLE public.commission_photos OWNER TO postgres;
+
+--
+-- TOC entry 231 (class 1259 OID 16515)
+-- Name: commission_photos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.commission_photos_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.commission_photos_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3787 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: commission_photos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.commission_photos_id_seq OWNED BY public.commission_photos.id;
+
+
+--
+-- TOC entry 228 (class 1259 OID 16467)
+-- Name: commissions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.commissions (
+    id bigint NOT NULL,
+    client_id bigint,
+    order_date timestamp with time zone,
+    deadline timestamp with time zone,
+    notes text,
+    status text DEFAULT 'pending'::text,
+    total_price numeric,
+    created_at timestamp with time zone,
+    created_username text,
+    updated_at timestamp with time zone,
+    updated_username text,
+    subtotal numeric,
+    discount_type text,
+    discount_value numeric,
+    payment_status text DEFAULT 'unpaid'::text
+);
+
+
+ALTER TABLE public.commissions OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 16466)
+-- Name: commissions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.commissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.commissions_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3788 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: commissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.commissions_id_seq OWNED BY public.commissions.id;
+
+
+--
+-- TOC entry 220 (class 1259 OID 16425)
+-- Name: master_materials; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.master_materials (
+    id bigint NOT NULL,
+    name text,
+    remark text,
+    status text DEFAULT 'Active'::text,
+    created_at timestamp with time zone,
+    created_username text,
+    updated_at timestamp with time zone,
+    updated_username text
+);
+
+
+ALTER TABLE public.master_materials OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 16424)
+-- Name: master_materials_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.master_materials_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.master_materials_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3789 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: master_materials_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.master_materials_id_seq OWNED BY public.master_materials.id;
+
+
+--
+-- TOC entry 248 (class 1259 OID 16636)
+-- Name: master_products; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.master_products (
+    id bigint NOT NULL,
+    name text,
+    unit text,
+    description text,
+    is_active boolean,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone
+);
+
+
+ALTER TABLE public.master_products OWNER TO postgres;
+
+--
+-- TOC entry 247 (class 1259 OID 16635)
+-- Name: master_products_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.master_products_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.master_products_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3790 (class 0 OID 0)
+-- Dependencies: 247
+-- Name: master_products_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.master_products_id_seq OWNED BY public.master_products.id;
+
+
+--
+-- TOC entry 222 (class 1259 OID 16435)
+-- Name: master_saints; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.master_saints (
+    id bigint NOT NULL,
+    name text,
+    remark text,
+    status text DEFAULT 'Active'::text,
+    created_at timestamp with time zone,
+    created_username text,
+    updated_at timestamp with time zone,
+    updated_username text
+);
+
+
+ALTER TABLE public.master_saints OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 16434)
+-- Name: master_saints_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.master_saints_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.master_saints_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3791 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: master_saints_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.master_saints_id_seq OWNED BY public.master_saints.id;
+
+
+--
+-- TOC entry 218 (class 1259 OID 16411)
+-- Name: master_sizes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.master_sizes (
+    id bigint NOT NULL,
+    name text,
+    size text,
+    status text DEFAULT 'Active'::text,
+    created_at timestamp with time zone,
+    created_username text,
+    updated_at timestamp with time zone,
+    updated_username text
+);
+
+
+ALTER TABLE public.master_sizes OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 16410)
+-- Name: master_sizes_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.master_sizes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.master_sizes_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3792 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: master_sizes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.master_sizes_id_seq OWNED BY public.master_sizes.id;
+
+
+--
+-- TOC entry 224 (class 1259 OID 16445)
+-- Name: master_styles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.master_styles (
+    id bigint NOT NULL,
+    name text,
+    remark text,
+    status text DEFAULT 'Active'::text,
+    created_at timestamp with time zone,
+    created_username text,
+    updated_at timestamp with time zone,
+    updated_username text
+);
+
+
+ALTER TABLE public.master_styles OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16444)
+-- Name: master_styles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.master_styles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.master_styles_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3793 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: master_styles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.master_styles_id_seq OWNED BY public.master_styles.id;
+
+
+--
+-- TOC entry 238 (class 1259 OID 16551)
+-- Name: material_component_variants; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.material_component_variants (
+    id bigint NOT NULL,
+    material_component_id bigint,
+    specification text,
+    length numeric,
+    width numeric,
+    thickness numeric,
+    unit text,
+    unit_price numeric,
+    remark text,
+    status text DEFAULT 'Active'::text,
+    created_at timestamp with time zone,
+    created_username text,
+    updated_at timestamp with time zone,
+    updated_username text
+);
+
+
+ALTER TABLE public.material_component_variants OWNER TO postgres;
+
+--
+-- TOC entry 237 (class 1259 OID 16550)
+-- Name: material_component_variants_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.material_component_variants_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.material_component_variants_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3794 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: material_component_variants_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.material_component_variants_id_seq OWNED BY public.material_component_variants.id;
+
+
+--
+-- TOC entry 236 (class 1259 OID 16541)
+-- Name: material_components; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.material_components (
+    id bigint NOT NULL,
+    name text,
+    category text,
+    unit text,
+    unit_price numeric,
+    remark text,
+    status text DEFAULT 'Active'::text,
+    created_at timestamp with time zone,
+    created_username text,
+    updated_at timestamp with time zone,
+    updated_username text
+);
+
+
+ALTER TABLE public.material_components OWNER TO postgres;
+
+--
+-- TOC entry 235 (class 1259 OID 16540)
+-- Name: material_components_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.material_components_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.material_components_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3795 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: material_components_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.material_components_id_seq OWNED BY public.material_components.id;
+
+
+--
+-- TOC entry 246 (class 1259 OID 16627)
+-- Name: purchase_order_items; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.purchase_order_items (
+    id bigint NOT NULL,
+    purchase_order_id bigint,
+    product_id bigint,
+    product_name text,
+    brand text,
+    quantity numeric,
+    unit_price numeric,
+    subtotal numeric,
+    remark text,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone
+);
+
+
+ALTER TABLE public.purchase_order_items OWNER TO postgres;
+
+--
+-- TOC entry 245 (class 1259 OID 16626)
+-- Name: purchase_order_items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.purchase_order_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.purchase_order_items_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3796 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: purchase_order_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.purchase_order_items_id_seq OWNED BY public.purchase_order_items.id;
+
+
+--
+-- TOC entry 244 (class 1259 OID 16618)
+-- Name: purchase_orders; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.purchase_orders (
+    id bigint NOT NULL,
+    document_name text,
+    document_no text,
+    order_date timestamp with time zone,
+    status text,
+    remark text,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    vendor_name text
+);
+
+
+ALTER TABLE public.purchase_orders OWNER TO postgres;
+
+--
+-- TOC entry 243 (class 1259 OID 16617)
+-- Name: purchase_orders_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.purchase_orders_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.purchase_orders_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3797 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: purchase_orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.purchase_orders_id_seq OWNED BY public.purchase_orders.id;
+
+
+--
+-- TOC entry 3523 (class 2604 OID 16403)
+-- Name: admins id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.admins ALTER COLUMN id SET DEFAULT nextval('public.admins_id_seq'::regclass);
+
+
+--
+-- TOC entry 3541 (class 2604 OID 16533)
+-- Name: cash_outs id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cash_outs ALTER COLUMN id SET DEFAULT nextval('public.cash_outs_id_seq'::regclass);
+
+
+--
+-- TOC entry 3532 (class 2604 OID 16458)
+-- Name: clients id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.clients ALTER COLUMN id SET DEFAULT nextval('public.clients_id_seq'::regclass);
+
+
+--
+-- TOC entry 3547 (class 2604 OID 16569)
+-- Name: commission_item_materials id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_item_materials ALTER COLUMN id SET DEFAULT nextval('public.commission_item_materials_id_seq'::regclass);
+
+
+--
+-- TOC entry 3539 (class 2604 OID 16485)
+-- Name: commission_items id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_items ALTER COLUMN id SET DEFAULT nextval('public.commission_items_id_seq'::regclass);
+
+
+--
+-- TOC entry 3549 (class 2604 OID 16585)
+-- Name: commission_payments id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_payments ALTER COLUMN id SET DEFAULT nextval('public.commission_payments_id_seq'::regclass);
+
+
+--
+-- TOC entry 3540 (class 2604 OID 16519)
+-- Name: commission_photos id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_photos ALTER COLUMN id SET DEFAULT nextval('public.commission_photos_id_seq'::regclass);
+
+
+--
+-- TOC entry 3536 (class 2604 OID 16470)
+-- Name: commissions id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commissions ALTER COLUMN id SET DEFAULT nextval('public.commissions_id_seq'::regclass);
+
+
+--
+-- TOC entry 3526 (class 2604 OID 16428)
+-- Name: master_materials id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.master_materials ALTER COLUMN id SET DEFAULT nextval('public.master_materials_id_seq'::regclass);
+
+
+--
+-- TOC entry 3552 (class 2604 OID 16639)
+-- Name: master_products id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.master_products ALTER COLUMN id SET DEFAULT nextval('public.master_products_id_seq'::regclass);
+
+
+--
+-- TOC entry 3528 (class 2604 OID 16438)
+-- Name: master_saints id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.master_saints ALTER COLUMN id SET DEFAULT nextval('public.master_saints_id_seq'::regclass);
+
+
+--
+-- TOC entry 3524 (class 2604 OID 16414)
+-- Name: master_sizes id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.master_sizes ALTER COLUMN id SET DEFAULT nextval('public.master_sizes_id_seq'::regclass);
+
+
+--
+-- TOC entry 3530 (class 2604 OID 16448)
+-- Name: master_styles id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.master_styles ALTER COLUMN id SET DEFAULT nextval('public.master_styles_id_seq'::regclass);
+
+
+--
+-- TOC entry 3545 (class 2604 OID 16554)
+-- Name: material_component_variants id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.material_component_variants ALTER COLUMN id SET DEFAULT nextval('public.material_component_variants_id_seq'::regclass);
+
+
+--
+-- TOC entry 3543 (class 2604 OID 16544)
+-- Name: material_components id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.material_components ALTER COLUMN id SET DEFAULT nextval('public.material_components_id_seq'::regclass);
+
+
+--
+-- TOC entry 3551 (class 2604 OID 16630)
+-- Name: purchase_order_items id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.purchase_order_items ALTER COLUMN id SET DEFAULT nextval('public.purchase_order_items_id_seq'::regclass);
+
+
+--
+-- TOC entry 3550 (class 2604 OID 16621)
+-- Name: purchase_orders id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.purchase_orders ALTER COLUMN id SET DEFAULT nextval('public.purchase_orders_id_seq'::regclass);
+
+
+--
+-- TOC entry 3743 (class 0 OID 16400)
+-- Dependencies: 216
+-- Data for Name: admins; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.admins (id, username, password, created_at, updated_at) FROM stdin;
+1	admin	$2a$10$UzOFy4jvjl5AHZixmcQyVuAE./gWLXQOsR9gh0SNZ./K.ZOuXJPtu	2026-07-28 15:19:11.658084+07	2026-07-28 15:19:11.658084+07
+\.
+
+
+--
+-- TOC entry 3761 (class 0 OID 16530)
+-- Dependencies: 234
+-- Data for Name: cash_outs; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cash_outs (id, category, description, amount, date, status, created_at, created_username, updated_at, updated_username, qty, unit_price, vendor, payment_method, receipt_url, notes) FROM stdin;
+2	Bahan Baku	Kayu Mahoni 13 x 16 cm	25000	2026-07-31 07:00:00+07	Active	2026-07-31 09:22:56.343185+07	admin	2026-07-31 09:22:56.343185+07	admin	2	12500	Surya Kayu	Cash		
+3	Lainnya	Merchandise Kartu Doa	150000	2026-07-31 07:00:00+07	Active	2026-07-31 09:24:48.721852+07	admin	2026-07-31 09:24:48.721852+07	admin	200	750	AMD Print	Transfer		By Shopee
+4	Lainnya	Kuota Untuk Promosi di Ig	50000	2026-08-13 07:00:00+07	Active	2026-08-13 15:18:42.239568+07	admin	2026-08-13 15:18:42.239568+07	admin	1	50000	Shopee	Transfer		
+5	Bahan Baku	Beli golflead isi 100 pcs 	23000	2026-09-23 07:00:00+07	Active	2026-09-23 14:46:19.868259+07	admin	2026-09-23 14:46:19.868259+07	admin	1	23000	Shopee	Transfer		pembelian goldleaf untuk stock barang
+\.
+
+
+--
+-- TOC entry 3753 (class 0 OID 16455)
+-- Dependencies: 226
+-- Data for Name: clients; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.clients (id, name, nickname, phone, alternate_phone, email, instagram_handle, address, city, province, postal_code, country, denomination, patron_saint_preference, parish_name, first_order_date, total_orders, preferred_payment_method, notes, status, created_at, created_username, updated_at, updated_username) FROM stdin;
+1	Maria Wijaya	Ria	081234567890		maria.wijaya@gmail.com	@mariawijaya_	Jl. Pandanaran No. 10, RT 05/RW 02	Semarang	Jawa Tengah	50134		Katolik	St. Bernadette Soubirous		\N	0	Transfer BCA		Active	2026-07-29 13:30:49.557542+07	admin	2026-07-30 15:39:14.457748+07	admin
+4	Ferrey	Ferrey	08217328123123		ferrey@gmaiil	@ferrey	Jl. Pleburan no 12	Semarang	Jawa Tengah	531234		-	St Maria		\N	0	QRIS		Active	2026-07-30 16:03:45.819361+07	admin	2026-07-30 16:03:58.819488+07	admin
+5	Christian Tombiling	Tian	0856234858311		tian@gmail.com	@tian	Jl. Wonodri no 12	Semarang	Jawa Tengah	562113		Katolik	-		\N	0	Transfer		Active	2026-07-30 18:12:28.614353+07	admin	2026-07-30 18:12:38.332218+07	admin
+2	Bernard Setiawan	Ben	081345678901		bernard.setiawan@email.com	@bernardsetiawan	Jl. Diponegoro No. 45	Yogyakarta	DI Yogyakarta	55223		Katolik	-		\N	0	Transfer Mandiri		Active	2026-07-29 13:34:45.244634+07	admin	2026-07-31 13:32:26.718312+07	admin
+6	Jonathan Christie	Jo	08568393229		jo@gmail.com	@jo	Jl. Sesama no 12 RT.02/RW.01 Kel. Sesama, Kec. Sesami	Semarang	Jawa Tengah	123945	Indonesia	Katolik	St. Dominikus Savio		\N	0	Transfer Mandiri		Active	2026-07-31 13:34:08.84786+07	admin	2026-07-31 13:34:08.84786+07	admin
+\.
+
+
+--
+-- TOC entry 3767 (class 0 OID 16566)
+-- Dependencies: 240
+-- Data for Name: commission_item_materials; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.commission_item_materials (id, commission_item_id, material_component_variant_id, quantity, unit_price, total_cost, remark, status, created_at, created_username, updated_at, updated_username) FROM stdin;
+1	17	1	3	6000	18000	Digunakan untuk panel utama	active	2026-08-13 13:14:54.364692+07	admin	2026-08-13 13:14:54.364692+07	admin
+\.
+
+
+--
+-- TOC entry 3757 (class 0 OID 16482)
+-- Dependencies: 230
+-- Data for Name: commission_items; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.commission_items (id, commission_id, saint_id, size_id, material_id, style_id, price, notes, material_component_variant_id, material_quantity, material_unit_price, material_cost) FROM stdin;
+8	5	3	7	1	1	950000	Ukuran besar buat dipajang di altar rumah	\N	\N	\N	\N
+19	7	4	8	2	2	1000000	-	\N	\N	\N	\N
+29	12	7	6	2	1	900000	tes	\N	\N	\N	\N
+35	16	4	4	2	4	300000		0	0	0	0
+28	11	2	7	3	1	300000		\N	\N	\N	\N
+22	9	9	5	2	2	280000	Tambahan Gold Leaf	\N	\N	\N	\N
+23	9	10	6	2	2	280000	Tambahan Gold leaf	\N	\N	\N	\N
+24	9	7	7	2	1	650000	Tambah goldleaf	\N	\N	\N	\N
+17	6	5	6	2	4	950000	Yang detail yaaaa	\N	\N	\N	\N
+18	6	4	6	2	4	950000	yang detail yaaaa	\N	\N	\N	\N
+20	8	3	7	2	2	500000		\N	\N	\N	\N
+21	8	5	7	2	1	50000		\N	\N	\N	\N
+32	14	3	6	3	2	200000		0	0	0	0
+33	14	3	6	2	1	20000		0	0	0	0
+5	3	3	7	1	1	750000	Untuk mempelai pria, pose tangan memberkati	\N	\N	\N	\N
+6	3	5	7	1	2	850000	Untuk mempelai wanita, gaya Hybrid dengan aureole emas	\N	\N	\N	\N
+34	15	9	6	2	1	950000		0	0	0	0
+30	13	7	6	2	1	80000	tes	\N	\N	\N	\N
+31	13	3	6	2	1	800000	tes	\N	\N	\N	\N
+25	10	4	7	2	1	550000	Menggunakan gold leaf, dan raised board	\N	\N	\N	\N
+26	10	5	7	2	1	550000	Menggunakan gold leaf, dan raised board	\N	\N	\N	\N
+27	10	9	7	2	1	550000	Menggunakan gold leaf, dan raised board	\N	\N	\N	\N
+\.
+
+
+--
+-- TOC entry 3769 (class 0 OID 16582)
+-- Dependencies: 242
+-- Data for Name: commission_payments; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.commission_payments (id, commission_id, amount, payment_type, method, paid_at, notes, created_username) FROM stdin;
+4	14	120000	pelunasan	Transfer	2026-08-18 14:52:10.300277+07		admin
+3	14	100000	dp	Transfer	2026-08-18 14:38:32.470648+07		admin
+5	3	1600000	pelunasan	Transfer	2026-08-18 14:52:44.652308+07		admin
+6	15	760000	pelunasan	Transfer	2026-08-18 15:01:27.136942+07		admin
+8	13	880000	pelunasan	Transfer	2026-08-18 15:03:33.623037+07		admin
+1	10	500000	cicilan	QRIS	2026-08-18 14:33:27.505785+07		admin
+9	5	950000	dp	Transfer	2026-09-23 13:26:24.425635+07		admin
+11	7	900000	pelunasan	Transfer	2026-09-23 13:27:17.846109+07		admin
+10	7	100000	pelunasan	QRIS	2026-09-23 13:26:51.094703+07	lunas	admin
+7	12	880000	pelunasan	Transfer	2026-08-18 15:02:22.975832+07		admin
+2	12	20000	dp	Transfer	2026-08-18 14:34:06.990633+07		admin
+13	16	240000	pelunasan	Transfer	2026-09-24 15:12:02.295361+07		admin
+12	16	50000	dp	Transfer	2026-09-24 15:11:30.227134+07		admin
+\.
+
+
+--
+-- TOC entry 3759 (class 0 OID 16516)
+-- Dependencies: 232
+-- Data for Name: commission_photos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.commission_photos (id, commission_id, file_url) FROM stdin;
+1	6	http://localhost:8080/uploads/1785406175122512000.heic
+3	8	http://localhost:8080/uploads/1785408312475068000.png
+4	10	http://localhost:8080/uploads/1785479697562790000.png
+2	7	http://localhost:8080/uploads/1785406314519711000.jpg
+\.
+
+
+--
+-- TOC entry 3755 (class 0 OID 16467)
+-- Dependencies: 228
+-- Data for Name: commissions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.commissions (id, client_id, order_date, deadline, notes, status, total_price, created_at, created_username, updated_at, updated_username, subtotal, discount_type, discount_value, payment_status) FROM stdin;
+14	1	2026-08-13 15:12:37.33935+07	2026-08-31 07:00:00+07		delivered	220000	2026-08-13 15:12:37.342378+07	admin	2026-08-18 14:52:10.309624+07	admin	0		0	paid
+3	1	2026-07-29 15:06:52.088049+07	2026-08-01 07:00:00+07	Sepasang ikon buat kado pernikahan	delivered	1600000	2026-07-29 15:06:52.096217+07	admin	2026-08-18 14:52:44.660887+07	admin	0		0	paid
+15	6	2026-08-18 14:47:42.97365+07	2026-08-18 07:00:00+07	Test	delivered	760000	2026-08-18 14:47:42.975007+07	admin	2026-08-18 15:01:27.139751+07	admin	950000	percent	20	paid
+13	6	2026-08-04 19:07:06.420842+07	2026-08-20 07:00:00+07	tes	delivered	880000	2026-08-04 19:07:06.42138+07	admin	2026-08-18 15:03:33.629424+07	admin	0		0	paid
+10	6	2026-07-31 13:36:51.918584+07	2026-08-31 07:00:00+07	Pemesanan untuk penggunaan altar pribadi	delivered	1650000	2026-07-31 13:36:51.921068+07	admin	2026-09-23 13:25:12.649652+07	admin	0		0	partial
+5	2	2026-07-29 15:07:50.824938+07	2026-08-30 07:00:00+07	Komisi tunggal buat hadiah baptis	delivered	950000	2026-07-29 15:07:50.825873+07	admin	2026-09-23 13:26:24.433949+07	admin	0		0	paid
+7	4	2026-07-30 17:12:17.893427+07	2026-09-02 07:00:00+07	untuk hadiah baptis	delivered	1000000	2026-07-30 17:12:17.896483+07	admin	2026-09-23 13:27:17.84856+07	admin	0		0	paid
+6	4	2026-07-30 17:10:28.036746+07	2026-08-30 07:00:00+07	Kado untuk teman	delivered	1900000	2026-07-30 17:10:28.068231+07	admin	2026-07-30 17:43:18.456236+07	admin	\N	\N	\N	unpaid
+12	4	2026-08-03 11:51:44.817382+07	2026-08-04 07:00:00+07		delivered	900000	2026-08-03 11:51:44.819692+07	admin	2026-09-23 14:35:26.835378+07	admin	0		0	paid
+16	4	2026-09-23 14:35:15.109357+07	2026-09-30 07:00:00+07		completed	290000	2026-09-23 14:35:15.112623+07	admin	2026-09-24 15:12:02.29831+07	admin	300000	fixed	10000	paid
+8	1	2026-07-30 17:46:04.999324+07	2026-08-31 07:00:00+07		delivered	550000	2026-07-30 17:46:05.002703+07	admin	2026-08-03 11:50:22.992407+07	admin	\N	\N	\N	unpaid
+11	1	2026-07-31 13:39:25.357613+07	2026-08-08 07:00:00+07		delivered	300000	2026-07-31 13:39:25.360838+07	admin	2026-08-03 11:54:59.171081+07	admin	\N	\N	\N	unpaid
+9	5	2026-07-30 18:15:47.657199+07	2026-08-30 07:00:00+07	Pemesanan 3 pcs	delivered	1210000	2026-07-30 18:15:47.658171+07	admin	2026-08-13 11:48:45.605141+07	admin	\N	\N	\N	unpaid
+\.
+
+
+--
+-- TOC entry 3747 (class 0 OID 16425)
+-- Dependencies: 220
+-- Data for Name: master_materials; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.master_materials (id, name, remark, status, created_at, created_username, updated_at, updated_username) FROM stdin;
+2	Kayu Pinus - tebal 2 cm	Kayu pinus tebal 2cm, berat 200 gr	active	2026-07-30 14:19:39.012257+07	admin	2026-07-30 14:19:39.012257+07	admin
+3	Multiplex + Linnen + Gesso - tebal 2cm	Bahan Multiplex Linen Gesso	active	2026-07-30 14:19:56.896551+07	admin	2026-07-30 14:20:57.118327+07	admin
+1	Kayu Mahoni + Linen + Gesso - tebal 2cm	Include Linen Gesso	Active	2026-07-29 12:02:24.417754+07	admin	2026-07-30 14:21:06.850652+07	admin
+\.
+
+
+--
+-- TOC entry 3775 (class 0 OID 16636)
+-- Dependencies: 248
+-- Data for Name: master_products; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.master_products (id, name, unit, description, is_active, created_at, updated_at) FROM stdin;
+4	Kuas Round 000	pcs	Kuas Brand Winsor	t	2026-09-24 14:53:27.886083+07	2026-09-24 14:54:00.169153+07
+5	Kuas Round 0000	pcs	rounded	t	2026-09-24 14:54:23.827637+07	2026-09-24 14:54:23.827637+07
+6	Kuas Flat 10	pcs	flat	t	2026-09-24 14:54:38.1556+07	2026-09-24 14:54:38.1556+07
+7	Kain Linen (50cm x 100cm)	lembar	pelapis kayu	t	2026-09-24 14:55:44.011811+07	2026-09-24 14:59:03.842716+07
+8	Kuas Round 5	pcs	round 5	t	2026-09-24 14:59:26.688538+07	2026-09-24 14:59:26.688538+07
+2	Triplex	pcs	Triplex untuk pembuatan icon dan frame	t	2026-09-24 13:43:34.852472+07	2026-09-24 14:59:49.921103+07
+3	Kayu Mahoni 10 x 12	pcs	Kayu Mahoni untuk pembuatan icon update	t	2026-09-24 13:45:10.823409+07	2026-09-24 16:26:21.448129+07
+9	Kayu Mahoni 13cm x 16cm	pcs	Untuk ikon medium	t	2026-09-24 16:26:51.750622+07	2026-09-24 16:26:51.750622+07
+10	Ongkos Kirim	-	biaya ongkos kirim	t	2026-09-24 17:09:34.237606+07	2026-09-24 17:09:34.237606+07
+11	Gold Leaf (9cm x 9cm) - Antique Gold (100pcs)	pcs	Goldleaf	t	2026-09-24 17:23:05.224917+07	2026-09-24 17:23:05.224917+07
+12	Gold Leaf (9cm x 9cm) - Champagne Gold (100pcs)	pcs		t	2026-09-24 17:23:27.538077+07	2026-09-24 17:23:27.538077+07
+13	Gold Leaf (9cm x 9cm) - Pure Gold (100pcs)	pcs		t	2026-09-24 17:23:43.539047+07	2026-09-24 17:23:43.539047+07
+\.
+
+
+--
+-- TOC entry 3749 (class 0 OID 16435)
+-- Dependencies: 222
+-- Data for Name: master_saints; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.master_saints (id, name, remark, status, created_at, created_username, updated_at, updated_username) FROM stdin;
+3	Christ Bridgeroom	Ikon Kristus Sang Mempelai	active	2026-07-29 12:21:57.26989+07	admin	2026-07-29 12:21:57.26989+07	admin
+4	Christ Pantocrator	Ikon Kristus Pantokrator	active	2026-07-29 12:22:39.796624+07	admin	2026-07-29 12:22:39.796624+07	admin
+5	Theotokos Hodegetria	Ikon Kristus Pantokrator	active	2026-07-29 12:22:50.315056+07	admin	2026-07-29 12:22:50.315056+07	admin
+2	Theotokos Vladimir	Ikon Bunda Allah penunjuk jalan	active	2026-07-29 12:20:43.039222+07	admin	2026-07-30 14:32:34.927503+07	admin
+7	Anunsiasi	Ikon Anunsiasi	active	2026-07-30 14:34:46.500983+07	admin	2026-07-30 14:34:46.500983+07	admin
+9	St Benediktus		active	2026-07-30 18:13:25.422969+07	admin	2026-07-30 18:13:25.422969+07	admin
+10	St Stefanus		active	2026-07-30 18:13:35.708797+07	admin	2026-07-30 18:13:35.708797+07	admin
+11	Theotokos Panakranta	Theotokos diatas takhta	active	2026-09-24 17:41:34.258384+07	admin	2026-09-24 17:41:34.258384+07	admin
+\.
+
+
+--
+-- TOC entry 3745 (class 0 OID 16411)
+-- Dependencies: 218
+-- Data for Name: master_sizes; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.master_sizes (id, name, size, status, created_at, created_username, updated_at, updated_username) FROM stdin;
+6	Medium	13x16	Active	2026-07-28 16:43:23.402205+07	admin	2026-07-30 13:23:39.996007+07	admin
+7	6R	15x20	Active	2026-07-28 16:43:46.061531+07	admin	2026-07-30 13:23:51.859969+07	admin
+5	Small	10x12	Active	2026-07-28 16:42:58.247167+07	admin	2026-07-30 13:30:16.012595+07	admin
+10	Iconostasis Size	40 x 60	active	2026-09-23 14:44:03.632817+07	admin	2026-09-23 14:44:03.632817+07	admin
+4	Extra Small Sekali	6x7	Active	2026-07-28 16:42:38.120608+07	admin	2026-09-23 14:44:18.131447+07	admin
+8	8R	12x14	Inactive	2026-07-30 13:25:26.529461+07	admin	2026-09-23 14:44:24.628543+07	admin
+\.
+
+
+--
+-- TOC entry 3751 (class 0 OID 16445)
+-- Dependencies: 224
+-- Data for Name: master_styles; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.master_styles (id, name, remark, status, created_at, created_username, updated_at, updated_username) FROM stdin;
+1	Russian Style	Gaya Russia Abad ke-12 	active	2026-07-29 13:09:43.006036+07	admin	2026-07-29 13:09:43.006036+07	admin
+2	Byzantine Style Banget	Gaya Byzantine Abad ke-10 	active	2026-07-29 13:10:25.400332+07	admin	2026-07-29 13:11:24.488079+07	admin
+4	Novgorod Style	Gaya Russia kuno	Inactive	2026-07-30 14:27:00.066673+07	admin	2026-07-30 14:27:05.153471+07	admin
+\.
+
+
+--
+-- TOC entry 3765 (class 0 OID 16551)
+-- Dependencies: 238
+-- Data for Name: material_component_variants; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.material_component_variants (id, material_component_id, specification, length, width, thickness, unit, unit_price, remark, status, created_at, created_username, updated_at, updated_username) FROM stdin;
+3	2	Kayu Gade A	12	10	2	pcs	6500		Active	2026-08-13 12:45:03.791605+07	admin	2026-08-13 12:45:03.791605+07	admin
+2	2	Kayu Grade A	26.5	19.5	2	pcs	103000	Panel 26.5 x 19.5 cm	Active	2026-08-13 12:26:38.642458+07	admin	2026-08-13 12:45:15.574438+07	admin
+1	2		6	7	2	pcs	6000	Potongan panel 6 x 7 cm	Active	2026-08-13 12:26:29.23024+07	admin	2026-08-13 12:46:49.870685+07	admin
+4	2		16	13	2	pcs	7000		Active	2026-08-13 12:47:20.895659+07	admin	2026-08-13 12:47:20.895659+07	admin
+6	3	Kuas 1	0	0	0	pcs	7000		Active	2026-08-13 14:09:22.684458+07	admin	2026-08-13 14:09:22.684458+07	admin
+\.
+
+
+--
+-- TOC entry 3763 (class 0 OID 16541)
+-- Dependencies: 236
+-- Data for Name: material_components; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.material_components (id, name, category, unit, unit_price, remark, status, created_at, created_username, updated_at, updated_username) FROM stdin;
+1	Gold Leaf 23K	Gold	sheet	25000	Gold leaf 23K	Active	2026-08-13 12:05:36.464239+07	admin	2026-08-13 12:13:53.877199+07	admin
+2	Kayu Pinus	Wood	\N	\N	Kayu pinus untuk panel ikon	Active	2026-08-13 12:25:53.984134+07	admin	2026-08-13 12:25:53.984134+07	admin
+3	Kuas Lukis Bulat	Kuas	\N	\N		Active	2026-08-13 14:08:31.602909+07	admin	2026-08-13 14:08:31.602909+07	admin
+\.
+
+
+--
+-- TOC entry 3773 (class 0 OID 16627)
+-- Dependencies: 246
+-- Data for Name: purchase_order_items; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.purchase_order_items (id, purchase_order_id, product_id, product_name, brand, quantity, unit_price, subtotal, remark, created_at, updated_at) FROM stdin;
+28	8	9	Kayu Mahoni 13cm x 16cm	Sjw	2	50000	100000	Kayu Grade A	2026-09-24 17:14:17.715166+07	2026-09-24 17:14:17.715166+07
+29	8	2	Triplex	Sjw	2	10000	20000	Triplex 3mm	2026-09-24 17:14:17.720831+07	2026-09-24 17:14:17.720831+07
+30	8	8	Kuas Round 5	Windsor	1	65000	65000	\N	2026-09-24 17:14:17.721346+07	2026-09-24 17:14:17.721346+07
+31	8	10	Ongkos Kirim	Shopee	1	10000	10000	Ongkos kirim dari Kebumen	2026-09-24 17:14:17.721651+07	2026-09-24 17:14:17.721651+07
+32	9	11	Gold Leaf (9cm x 9cm) - Antique Gold (100pcs)	Leka Gold Leaf	2	65000	130000	\N	2026-09-24 17:25:19.071433+07	2026-09-24 17:25:19.071433+07
+33	9	13	Gold Leaf (9cm x 9cm) - Pure Gold (100pcs)	Leka Gold	1	140000	140000	\N	2026-09-24 17:25:19.074757+07	2026-09-24 17:25:19.074757+07
+34	9	10	Ongkos Kirim	\N	1	10000	10000	Ongkos Kirim dari Surabaya	2026-09-24 17:25:19.075071+07	2026-09-24 17:25:19.075071+07
+\.
+
+
+--
+-- TOC entry 3771 (class 0 OID 16618)
+-- Dependencies: 244
+-- Data for Name: purchase_orders; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.purchase_orders (id, document_name, document_no, order_date, status, remark, created_at, updated_at, vendor_name) FROM stdin;
+8	Purchase Order	PO-20260924-162821	2026-09-24 07:00:00+07	ordered	Pemesanan kayu dan triplex untuk bahan baku ikon Gereja Rusia-Bali	2026-09-24 16:28:21.337487+07	2026-09-24 17:14:27.630453+07	Sujiwo Furniture (Shopee)
+9	Purchase Order	PO-20260924-172519	2026-09-24 07:00:00+07	draft	Pembelian gold leaf untuk pelukisan ikon.	2026-09-24 17:25:19.067178+07	2026-09-24 17:25:19.067178+07	Bali Art & Supplies
+\.
+
+
+--
+-- TOC entry 3798 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: admins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.admins_id_seq', 1, true);
+
+
+--
+-- TOC entry 3799 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: cash_outs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cash_outs_id_seq', 5, true);
+
+
+--
+-- TOC entry 3800 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: clients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.clients_id_seq', 6, true);
+
+
+--
+-- TOC entry 3801 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: commission_item_materials_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.commission_item_materials_id_seq', 1, true);
+
+
+--
+-- TOC entry 3802 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: commission_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.commission_items_id_seq', 35, true);
+
+
+--
+-- TOC entry 3803 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: commission_payments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.commission_payments_id_seq', 13, true);
+
+
+--
+-- TOC entry 3804 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: commission_photos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.commission_photos_id_seq', 4, true);
+
+
+--
+-- TOC entry 3805 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: commissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.commissions_id_seq', 16, true);
+
+
+--
+-- TOC entry 3806 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: master_materials_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.master_materials_id_seq', 3, true);
+
+
+--
+-- TOC entry 3807 (class 0 OID 0)
+-- Dependencies: 247
+-- Name: master_products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.master_products_id_seq', 13, true);
+
+
+--
+-- TOC entry 3808 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: master_saints_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.master_saints_id_seq', 11, true);
+
+
+--
+-- TOC entry 3809 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: master_sizes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.master_sizes_id_seq', 10, true);
+
+
+--
+-- TOC entry 3810 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: master_styles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.master_styles_id_seq', 4, true);
+
+
+--
+-- TOC entry 3811 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: material_component_variants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.material_component_variants_id_seq', 6, true);
+
+
+--
+-- TOC entry 3812 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: material_components_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.material_components_id_seq', 3, true);
+
+
+--
+-- TOC entry 3813 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: purchase_order_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.purchase_order_items_id_seq', 34, true);
+
+
+--
+-- TOC entry 3814 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: purchase_orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.purchase_orders_id_seq', 9, true);
+
+
+--
+-- TOC entry 3554 (class 2606 OID 16407)
+-- Name: admins admins_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.admins
+    ADD CONSTRAINT admins_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3574 (class 2606 OID 16538)
+-- Name: cash_outs cash_outs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cash_outs
+    ADD CONSTRAINT cash_outs_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3566 (class 2606 OID 16465)
+-- Name: clients clients_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.clients
+    ADD CONSTRAINT clients_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3580 (class 2606 OID 16574)
+-- Name: commission_item_materials commission_item_materials_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_item_materials
+    ADD CONSTRAINT commission_item_materials_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3570 (class 2606 OID 16489)
+-- Name: commission_items commission_items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_items
+    ADD CONSTRAINT commission_items_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3582 (class 2606 OID 16589)
+-- Name: commission_payments commission_payments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_payments
+    ADD CONSTRAINT commission_payments_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3572 (class 2606 OID 16523)
+-- Name: commission_photos commission_photos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_photos
+    ADD CONSTRAINT commission_photos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3568 (class 2606 OID 16475)
+-- Name: commissions commissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commissions
+    ADD CONSTRAINT commissions_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3560 (class 2606 OID 16433)
+-- Name: master_materials master_materials_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.master_materials
+    ADD CONSTRAINT master_materials_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3588 (class 2606 OID 16643)
+-- Name: master_products master_products_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.master_products
+    ADD CONSTRAINT master_products_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3562 (class 2606 OID 16443)
+-- Name: master_saints master_saints_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.master_saints
+    ADD CONSTRAINT master_saints_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3558 (class 2606 OID 16418)
+-- Name: master_sizes master_sizes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.master_sizes
+    ADD CONSTRAINT master_sizes_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3564 (class 2606 OID 16453)
+-- Name: master_styles master_styles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.master_styles
+    ADD CONSTRAINT master_styles_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3578 (class 2606 OID 16559)
+-- Name: material_component_variants material_component_variants_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.material_component_variants
+    ADD CONSTRAINT material_component_variants_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3576 (class 2606 OID 16549)
+-- Name: material_components material_components_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.material_components
+    ADD CONSTRAINT material_components_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3586 (class 2606 OID 16634)
+-- Name: purchase_order_items purchase_order_items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.purchase_order_items
+    ADD CONSTRAINT purchase_order_items_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3584 (class 2606 OID 16625)
+-- Name: purchase_orders purchase_orders_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.purchase_orders
+    ADD CONSTRAINT purchase_orders_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3556 (class 2606 OID 16409)
+-- Name: admins uni_admins_username; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.admins
+    ADD CONSTRAINT uni_admins_username UNIQUE (username);
+
+
+--
+-- TOC entry 3597 (class 2606 OID 16575)
+-- Name: commission_item_materials fk_commission_item_materials_material_component_variant; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_item_materials
+    ADD CONSTRAINT fk_commission_item_materials_material_component_variant FOREIGN KEY (material_component_variant_id) REFERENCES public.material_component_variants(id);
+
+
+--
+-- TOC entry 3590 (class 2606 OID 16500)
+-- Name: commission_items fk_commission_items_material; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_items
+    ADD CONSTRAINT fk_commission_items_material FOREIGN KEY (material_id) REFERENCES public.master_materials(id);
+
+
+--
+-- TOC entry 3591 (class 2606 OID 16490)
+-- Name: commission_items fk_commission_items_saint; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_items
+    ADD CONSTRAINT fk_commission_items_saint FOREIGN KEY (saint_id) REFERENCES public.master_saints(id);
+
+
+--
+-- TOC entry 3592 (class 2606 OID 16495)
+-- Name: commission_items fk_commission_items_size; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_items
+    ADD CONSTRAINT fk_commission_items_size FOREIGN KEY (size_id) REFERENCES public.master_sizes(id);
+
+
+--
+-- TOC entry 3593 (class 2606 OID 16505)
+-- Name: commission_items fk_commission_items_style; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_items
+    ADD CONSTRAINT fk_commission_items_style FOREIGN KEY (style_id) REFERENCES public.master_styles(id);
+
+
+--
+-- TOC entry 3589 (class 2606 OID 16476)
+-- Name: commissions fk_commissions_client; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commissions
+    ADD CONSTRAINT fk_commissions_client FOREIGN KEY (client_id) REFERENCES public.clients(id);
+
+
+--
+-- TOC entry 3594 (class 2606 OID 16510)
+-- Name: commission_items fk_commissions_items; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_items
+    ADD CONSTRAINT fk_commissions_items FOREIGN KEY (commission_id) REFERENCES public.commissions(id);
+
+
+--
+-- TOC entry 3598 (class 2606 OID 16590)
+-- Name: commission_payments fk_commissions_payments; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_payments
+    ADD CONSTRAINT fk_commissions_payments FOREIGN KEY (commission_id) REFERENCES public.commissions(id);
+
+
+--
+-- TOC entry 3595 (class 2606 OID 16524)
+-- Name: commission_photos fk_commissions_photos; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.commission_photos
+    ADD CONSTRAINT fk_commissions_photos FOREIGN KEY (commission_id) REFERENCES public.commissions(id);
+
+
+--
+-- TOC entry 3596 (class 2606 OID 16560)
+-- Name: material_component_variants fk_material_components_variants; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.material_component_variants
+    ADD CONSTRAINT fk_material_components_variants FOREIGN KEY (material_component_id) REFERENCES public.material_components(id);
+
+
+-- Completed on 2026-09-25 12:17:17 WIB
+
+--
+-- PostgreSQL database dump complete
+--
+
